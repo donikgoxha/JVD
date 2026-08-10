@@ -1,0 +1,3 @@
+# Netlify SPA fallback: react-router owns /about, /our-work and /book, so every
+# path must be served index.html with a 200 (not a 301) or a hard refresh 404s.
+/*    /index.html   200

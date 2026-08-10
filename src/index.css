@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+/* Tailwind v4 is CSS-first: design tokens live here, no tailwind.config.js needed. */
+@theme {
+  --color-brand-50: #eff9fb;
+  --color-brand-100: #d7f0f5;
+  --color-brand-200: #b0e2ec;
+  --color-brand-300: #7bcddd;
+  --color-brand-400: #43b0c6;
+  --color-brand-500: #2494ac;
+  --color-brand-600: #1d7791;
+  --color-brand-700: #1d6076;
+  --color-brand-800: #1f4f60;
+  --color-brand-900: #1e4252;
+
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+
+  --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius-card: 1.25rem;
+}
+
+@font-face {
+  font-family: 'Inter var';
+  src: url('/fonts/inter-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-white text-ink font-sans antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/*
+ * Tailwind v4 registers custom classes with @utility, not @layer components.
+ * Written as real utilities they stay composable — any `btn-*` can be overridden
+ * inline (`className="btn-primary px-8 py-4"`) because utility order still wins.
+ * Note: @apply only accepts utilities, so the shared button base is spelled out
+ * in each variant rather than @apply'd from `btn`.
+ */
+@utility container-page {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+         text-sm font-semibold whitespace-nowrap transition-colors duration-150;
+}
+
+@utility btn-primary {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+         text-sm font-semibold whitespace-nowrap transition-colors duration-150
+         bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+}
+
+@utility btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+         text-sm font-semibold whitespace-nowrap transition-colors duration-150
+         border border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50;
+}
+
+@utility card {
+  @apply rounded-[1.25rem] border border-line bg-white p-6 shadow-sm;
+}
+
+@utility eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.14em] text-brand-600;
+}
