@@ -13,12 +13,12 @@
     <title>JVD Dental Clinic — Gostivar</title>
     <meta
       name="description"
-      content="JVD Dental Clinic — modern dental care in Gostivar. Book an appointment online with the doctor and the clinic that suit you."
+      content="JVD Dental Clinic — a family dental practice with two clinics in Gostivar. Choose your dentist and your clinic, and call to book."
     />
 
-    <!-- Preconnect to the booking provider so the widget starts loading fast on /book -->
-    <link rel="preconnect" href="https://app.cal.com" crossorigin />
-    <link rel="dns-prefetch" href="https://app.cal.com" />
+    <!-- The Cal.com preconnect is injected by vite.config.js, but only when
+         VITE_BOOKING_MODE=cal. In phone mode it would be a wasted handshake
+         on every page load. -->
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -34,9 +34,9 @@
 
     <!-- Open Graph -->
     <meta property="og:title" content="JVD Dental Clinic — Gostivar" />
-    <meta property="og:description" content="Book your dental appointment online in Gostivar." />
+    <meta property="og:description" content="A family dental practice with two clinics in Gostivar. Three dentists, one standard of care." />
+    <meta property="og:locale" content="en" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-cover.jpg" />
   </head>
   <body>
     <div id="root"></div>

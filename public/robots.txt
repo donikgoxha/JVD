@@ -1,22 +1,5 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# DEMO MODE — indexing is blocked on purpose.
-#
-# The site currently carries placeholder content: invented case studies, an
-# invented history timeline, guessed opening hours and a guessed service list,
-# all under the real clinic's name. Letting a search engine index that would
-# put unverified claims about a real dental practice into public results.
-#
-# AT LAUNCH, once the content in src/data/clinic.js and the pages is confirmed,
-# replace this whole block with:
-#
-#   User-agent: *
-#   Allow: /
-#
-# ─────────────────────────────────────────────────────────────────────────────
+# JVD Dental Clinic — live. Crawl everything.
 User-agent: *
-Disallow: /
+Allow: /
 
-# PLACEHOLDER DOMAIN: jvddental.mk is not confirmed. Swap this host for the
-# real one (here and in sitemap.xml) before launch — a sitemap on the wrong
-# origin is ignored by search engines.
-Sitemap: https://jvddental.mk/sitemap.xml
+Sitemap: https://jvd-dental.vercel.app/sitemap.xml

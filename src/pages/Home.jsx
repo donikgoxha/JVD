@@ -21,8 +21,8 @@ export default function Home() {
               Dental care you can actually look forward to.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-              JVD Dental Clinic combines calm, unhurried consultations with modern equipment and
-              clear pricing. Pick your doctor, pick your location, and book in under a minute.
+              A family practice in Gostivar. Choose the clinic that is closer and the dentist you
+              want to see — we will take it from there.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -34,14 +34,13 @@ export default function Home() {
               </a>
             </div>
 
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
+            <dl className="mt-12 grid max-w-sm grid-cols-2 gap-6 border-t border-line pt-8">
               {/* Only verifiable facts here. Do not add a years-in-practice or a
                   star-rating figure until the clinic confirms the real number —
                   an invented review score is a claim the practice has to defend. */}
               {[
                 [String(LOCATIONS.length), `Clinics in ${CLINIC.city}`],
                 [String(DOCTORS.length), 'Practitioners'],
-                ['Mon–Sat', 'Open six days'],
               ].map(([stat, label]) => (
                 <div key={label}>
                   <dt className="text-2xl font-bold text-brand-700 sm:text-3xl">{stat}</dt>
@@ -64,8 +63,10 @@ export default function Home() {
               className="aspect-[4/5] w-full rounded-[var(--radius-card)] object-cover shadow-xl"
             />
             <div className="absolute -bottom-5 left-5 right-5 rounded-2xl border border-line bg-white/95 p-4 shadow-lg backdrop-blur sm:left-8 sm:right-auto sm:w-72">
-              <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">Open today</p>
-              <p className="mt-1 text-sm text-muted">{LOCATIONS[0].hours}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">
+                {LOCATIONS[0].hours ? 'Open today' : 'Call us'}
+              </p>
+              <p className="mt-1 text-sm text-muted">{LOCATIONS[0].hours ?? CLINIC.phone}</p>
             </div>
           </div>
         </div>
@@ -75,7 +76,7 @@ export default function Home() {
       <Section
         eyebrow="What we do"
         title="Services, briefly"
-        lead="Everything from a six-month check-up to full-arch implant work, under one roof."
+        lead="The treatments our patients ask for most."
       >
         <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {SERVICES.map((service) => (
@@ -104,7 +105,7 @@ export default function Home() {
               <p className="mt-1 text-sm text-brand-700">{loc.note}</p>
               <address className="mt-4 space-y-1 text-sm not-italic text-muted">
                 <p>{loc.address}</p>
-                <p>{loc.hours}</p>
+                {loc.hours ? <p>{loc.hours}</p> : <p>Call {loc.phone} for opening hours</p>}
               </address>
               <div className="mt-6 flex flex-wrap gap-2">
                 <Link to={`/book?location=${loc.id}`} className="btn-primary px-5 py-2.5">
@@ -124,8 +125,8 @@ export default function Home() {
         <div className="rounded-[var(--radius-card)] bg-brand-700 px-6 py-14 text-center text-white sm:px-12">
           <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Ready when you are.</h2>
           <p className="mx-auto mt-3 max-w-xl text-brand-100">
-            Real-time availability for every doctor at both locations. No phone tag, no waiting on a
-            callback.
+            Pick your clinic and your dentist, and we will put you straight through to the right
+            number.
           </p>
           <Link to="/book" className="btn mt-8 bg-white px-8 py-4 text-base text-brand-800 hover:bg-brand-50">
             Book an Appointment

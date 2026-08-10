@@ -67,14 +67,22 @@ export default function Booking() {
         <div className="container-page py-12 sm:py-16">
           <p className="eyebrow">Book now</p>
           <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-            Pick a location, a doctor, and a time.
+            {BOOKING_MODE === 'phone'
+              ? 'Pick a location and a doctor.'
+              : 'Pick a location, a doctor, and a time.'}
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted">
-            {DEMO_BOOKING && !DEMO_CAL_LINK
-              ? 'Choose a clinic and a doctor to see their availability. '
-              : 'Availability below is live. '}
-            You will get an email confirmation with the exact clinic address and a link to
-            reschedule. Prefer to talk?{' '}
+            {BOOKING_MODE === 'phone' ? (
+              <>
+                Choose the clinic and the dentist you want, and we will show you the direct number
+                to call. Prefer to call straight away?{' '}
+              </>
+            ) : (
+              <>
+                Availability below is live. You will get an email confirmation with the exact clinic
+                address and a link to reschedule. Prefer to talk?{' '}
+              </>
+            )}
             <a href={`tel:${CLINIC.phone.replace(/\s/g, '')}`} className="font-medium text-brand-700 underline underline-offset-4">
               Call {CLINIC.phone}
             </a>
@@ -116,7 +124,7 @@ export default function Booking() {
                         <span>
                           <span className="block text-sm font-semibold">{loc.name}</span>
                           <span className="mt-1 block text-sm text-muted">{loc.address}</span>
-                          <span className="mt-1.5 block text-xs text-muted">{loc.hours}</span>
+                          {loc.hours && <span className="mt-1.5 block text-xs text-muted">{loc.hours}</span>}
                         </span>
                         <Check active={active} />
                       </span>
@@ -181,7 +189,11 @@ export default function Booking() {
 
           {/* ── STEP 3: the third-party calendar ───────────────────────────── */}
           <li className="list-none">
-            <StepHeading n={3} title="Choose a date and time" muted={!ready} />
+            <StepHeading
+              n={3}
+              title={BOOKING_MODE === 'phone' ? 'Call to book' : 'Choose a date and time'}
+              muted={!ready}
+            />
 
             <div className="mt-4">
               {ready ? (
@@ -202,31 +214,34 @@ export default function Booking() {
 /* ------------------------------------------------------------------ */
 
 /**
- * Booking-source resolution, in precedence order:
+ * How step 3 books, chosen at build time by VITE_BOOKING_MODE:
  *
- *   1. VITE_CAL_DEMO_LINK  — a real Cal.com link (e.g. "yourname/consultation")
- *                            used for EVERY doctor/location pair. One throwaway
- *                            event type is then enough to demo the live embed.
- *   2. VITE_DEMO_BOOKING=1 — render the local DemoCalendar instead. No third
- *                            party, no real bookings.
- *   3. default             — the per-combination slug from clinic.js.
+ *   'cal'    the Cal.com embed, using the per-combination slug from clinic.js.
+ *            The real production mode — requires the event types to exist.
+ *   'phone'  no calendar. Shows the clinic's direct number for that doctor and
+ *            location. Correct while no scheduling account exists: a live site
+ *            must not show a patient availability it cannot honour.
+ *   'demo'   the local DemoCalendar — sample availability behind an explicit
+ *            banner. For internal review only, never for a public deployment.
  *
- * Both flags are build-time. Unset them and the site is fully live again.
+ * VITE_CAL_DEMO_LINK overrides the slug with one real Cal.com link for every
+ * pair, which is how you exercise the genuine embed with a single event type.
  */
-const DEMO_CAL_LINK = import.meta.env.VITE_CAL_DEMO_LINK?.trim() || null
-const DEMO_BOOKING = import.meta.env.VITE_DEMO_BOOKING === '1'
+const CAL_DEMO_LINK = import.meta.env.VITE_CAL_DEMO_LINK?.trim() || null
+const BOOKING_MODE = CAL_DEMO_LINK ? 'cal' : import.meta.env.VITE_BOOKING_MODE?.trim() || 'cal'
 
 function CalendarPanel({ calLink, doctor, location }) {
   // A namespace per combination keeps Cal's internal instances from colliding
   // when the patient switches doctor or location without leaving the page.
   const namespace = `${doctor.id}-${location.id}`
-  const effectiveLink = DEMO_CAL_LINK ?? calLink
-  const useLocalDemo = !DEMO_CAL_LINK && DEMO_BOOKING
+  const effectiveLink = CAL_DEMO_LINK ?? calLink
+  const useLocalDemo = BOOKING_MODE === 'demo'
+  const usePhone = BOOKING_MODE === 'phone'
 
   const { containerRef, status } = useCalEmbed({
     calLink: effectiveLink,
     namespace,
-    enabled: !useLocalDemo,
+    enabled: !useLocalDemo && !usePhone,
     // Anything here is forwarded to Cal.com. `metadata` lands on the booking
     // record and in the webhook payload, which is how the front desk knows
     // which physical clinic a booking belongs to.
@@ -245,12 +260,17 @@ function CalendarPanel({ calLink, doctor, location }) {
             {location.name} · {location.address}
           </p>
         </div>
-        <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-200">
-          {location.hours}
-        </span>
+        <a
+          href={`tel:${location.phone.replace(/\s/g, '')}`}
+          className="rounded-full bg-white px-3 py-1 text-xs font-medium text-brand-700 ring-1 ring-brand-200 hover:bg-brand-50"
+        >
+          {location.hours ?? location.phone}
+        </a>
       </div>
 
-      {useLocalDemo ? (
+      {usePhone ? (
+        <PhoneBooking key={namespace} doctor={doctor} location={location} />
+      ) : useLocalDemo ? (
         <DemoCalendar key={namespace} doctor={doctor} location={location} />
       ) : (
         /* Cal.com renders its iframe into this element. min-height reserves the
@@ -295,6 +315,57 @@ function CalendarPanel({ calLink, doctor, location }) {
   )
 }
 
+/**
+ * Step 3 when there is no scheduling account yet. The two selections already
+ * made are not wasted: they resolve to the one phone number that reaches the
+ * right clinic, and the address the patient is being sent to.
+ */
+function PhoneBooking({ doctor, location }) {
+  const tel = (n) => `tel:${n.replace(/\s/g, '')}`
+
+  return (
+    <div className="grid min-h-[420px] place-items-center p-6 sm:p-10">
+      <div className="w-full max-w-md text-center">
+        <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-50 text-brand-700">
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6.6 3h2.8l1.4 3.5-1.8 1.4a12 12 0 005.1 5.1l1.4-1.8L19 12.6v2.8a2 2 0 01-2.2 2A15.5 15.5 0 014.6 5.2 2 2 0 016.6 3Z" />
+          </svg>
+        </span>
+
+        <h3 className="mt-5 text-lg font-semibold">Call to book with {doctor.shortName}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          Appointments at {location.name} are booked by phone. Mention {doctor.name} and the
+          reason for your visit, and the clinic will find you a time.
+        </p>
+
+        <a href={tel(doctor.phone)} className="btn-primary mt-6 w-full px-6 py-4 text-base">
+          {doctor.phone}
+        </a>
+
+        {location.phone !== doctor.phone && (
+          <a href={tel(location.phone)} className="btn-ghost mt-3 w-full px-6 py-3.5">
+            Clinic line · {location.phone}
+          </a>
+        )}
+
+        <p className="mt-6 text-xs leading-relaxed text-muted">
+          {location.address}
+          {location.hours ? ` · ${location.hours}` : ''}
+        </p>
+
+        <a
+          href={location.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-xs font-medium text-brand-700 underline underline-offset-4"
+        >
+          Open in Maps
+        </a>
+      </div>
+    </div>
+  )
+}
+
 function EmptyCalendar({ hasLocation }) {
   return (
     <div className="grid min-h-[420px] place-items-center rounded-[var(--radius-card)] border border-dashed border-line bg-brand-50/30 p-8 text-center">
@@ -307,7 +378,9 @@ function EmptyCalendar({ hasLocation }) {
           {hasLocation ? 'Now choose a doctor' : 'Start by choosing a location'}
         </p>
         <p className="mt-2 text-sm text-muted">
-          Live availability appears here as soon as both are selected.
+          {BOOKING_MODE === 'phone'
+            ? 'The number for that clinic appears here as soon as both are selected.'
+            : 'Live availability appears here as soon as both are selected.'}
         </p>
       </div>
     </div>

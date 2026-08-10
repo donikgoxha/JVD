@@ -30,7 +30,7 @@ export default function Footer() {
               <p className="text-sm font-semibold text-white">{loc.name}</p>
               <address className="mt-3 space-y-1.5 text-sm not-italic text-brand-200">
                 <p>{loc.address}</p>
-                <p>{loc.hours}</p>
+                {loc.hours && <p>{loc.hours}</p>}
                 <a href={`tel:${loc.phone.replace(/\s/g, '')}`} className="block hover:text-white">
                   {loc.phone}
                 </a>
@@ -52,11 +52,13 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
-            <li>
-              <a href={`mailto:${CLINIC.email}`} className="hover:text-white">
-                {CLINIC.email}
-              </a>
-            </li>
+            {CLINIC.email && (
+              <li>
+                <a href={`mailto:${CLINIC.email}`} className="hover:text-white">
+                  {CLINIC.email}
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       </div>
@@ -66,7 +68,7 @@ export default function Footer() {
           <p>
             © {new Date().getFullYear()} {CLINIC.name}. All rights reserved.
           </p>
-          <p>Emergencies outside opening hours: call {CLINIC.phone}.</p>
+          <p>Outside opening hours: call {CLINIC.phone}.</p>
         </div>
       </div>
 

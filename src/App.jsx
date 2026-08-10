@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar.jsx'
 import Footer from './components/Footer.jsx'
+import usePageMeta from './hooks/usePageMeta.js'
 import Home from './pages/Home.jsx'
 
 // Only Home ships in the initial bundle. Everything else is a separate chunk
@@ -29,6 +30,8 @@ function RouteFallback() {
 }
 
 export default function App() {
+  usePageMeta()
+
   return (
     <div className="flex min-h-dvh flex-col">
       <ScrollToTop />

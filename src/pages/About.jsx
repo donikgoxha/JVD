@@ -3,23 +3,27 @@ import Section from '../components/Section.jsx'
 import Img from '../components/Img.jsx'
 import { CLINIC, DOCTORS, locationsForDoctor } from '../data/clinic.js'
 
-// TODO: placeholder history — replace every entry with the clinic's real
-// milestones and dates. Nothing here has been confirmed.
-const TIMELINE = [
-  { year: '2012', title: 'One chair, one room', text: 'JVD opens as a single-surgery practice in central Gostivar.' },
-  { year: '2016', title: 'Digital imaging', text: 'Intraoral scanning and digital radiography replace impressions and film.' },
-  { year: '2020', title: 'Specialist team', text: 'Orthodontics and implantology join the general practice.' },
-  { year: '2024', title: 'Second location', text: 'The Ciglana clinic opens to shorten waiting times across the city.' },
-]
-
-// TODO: these are promises the practice has to keep — written estimates,
-// sterilisation logging, longer appointments. Confirm each one is true before
-// launch, or cut it.
+// Kept deliberately non-promissory. "Fixed, written pricing" and "Sterility,
+// verified" used to sit here — both are operational guarantees the practice
+// would have to honour, and neither was confirmed. Do not add a claim here
+// unless the clinic has told you it is true.
 const VALUES = [
-  { title: 'Explain before you treat', text: 'Nothing starts until you understand the plan, the alternatives and the cost.' },
-  { title: 'Fixed, written pricing', text: 'You get a written estimate before treatment. No surprises at the desk.' },
-  { title: 'Gentle by default', text: 'Longer appointments and modern anaesthesia — built for anxious patients.' },
-  { title: 'Sterility, verified', text: 'Every instrument cycle is logged and traceable to your appointment.' },
+  {
+    title: 'Explain before you treat',
+    text: 'You hear the plan, the alternatives and the cost before anything starts.',
+  },
+  {
+    title: 'Time to ask',
+    text: 'Questions are part of the appointment, not an interruption to it.',
+  },
+  {
+    title: 'Gentle by default',
+    text: 'We work at your pace, and we stop when you need to stop.',
+  },
+  {
+    title: 'One family, two clinics',
+    text: 'The same people, the same standard, whichever address is closer to you.',
+  },
 ]
 
 export default function About() {
@@ -29,10 +33,11 @@ export default function About() {
         <div className="container-page py-16 sm:py-20">
           <p className="eyebrow">About us</p>
           <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">
-            A family practice that grew up, without losing the family part.
+            A family practice, across two clinics in Gostivar.
           </h1>
-          {/* TODO: placeholder story. The founding year and the growth arc are
-              not confirmed — replace with the clinic's own account before launch. */}
+          {/* TODO: the clinic's own story — founding year, how the second clinic
+              came about — is not confirmed, so nothing is claimed here. Ask for
+              it and expand this paragraph. */}
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted">
             {CLINIC.name} is a family practice in {CLINIC.city}, run by the Selimi family across two
             clinics, on one rule: never treat a patient who does not understand what is about to
@@ -67,19 +72,7 @@ export default function About() {
         </div>
       </Section>
 
-      <Section eyebrow="History" title="How we got here" className="bg-brand-50/40">
-        <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {TIMELINE.map((item) => (
-            <li key={item.year} className="border-t-2 border-brand-300 pt-5">
-              <p className="text-sm font-bold text-brand-700">{item.year}</p>
-              <h3 className="mt-2 text-base font-semibold">{item.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{item.text}</p>
-            </li>
-          ))}
-        </ol>
-      </Section>
-
-      <Section eyebrow="The team" title="Who you will actually meet" lead="Every doctor below takes bookings directly through the online calendar.">
+      <Section eyebrow="The team" title="Who you will actually meet" lead="Three dentists across two clinics. Each one is reachable directly.">
         <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {DOCTORS.map((doc) => {
             const worksAt = locationsForDoctor(doc.id)

@@ -28,7 +28,7 @@ npm run lint          # eslint . (flat config, ESLint 9)
 ```
 
 Environment variables: `.env.production` is **committed** and holds the build-time flags that
-every deployment depends on (currently `VITE_DEMO_BOOKING=1`). Copy `.env.example` to
+every deployment depends on (`VITE_BOOKING_MODE`, `VITE_SITE_URL`). Copy `.env.example` to
 `.env.local` for personal overrides — `.env.local` is gitignored and never reaches a build. Note that Vite **inlines** every
 `VITE_`-prefixed variable into the client bundle — never put a secret in one.
 
@@ -193,12 +193,12 @@ jvd-dental/
 ├── eslint.config.js               # ESLint 9 flat config: react-hooks + react-refresh rules
 ├── vercel.json                    # Vercel: framework/build/output, SPA rewrite, asset cache + security headers
 ├── .env.example                   # documents every VITE_ variable; copy to .env.local for local overrides
-├── .env.production                # COMMITTED build-time flags (currently VITE_DEMO_BOOKING=1)
+├── .env.production                # COMMITTED build-time flags: VITE_BOOKING_MODE, VITE_SITE_URL
 ├── .gitignore                     # node_modules, dist, .env.local, editor and OS noise
 ├── README.md                      # this file
 ├── docs/
 │   ├── BOOKING_SETUP.md           # operator guide for wiring Cal.com (or Calendly/Acuity)
-│   ├── DEPLOY_VERCEL.md           # Git-driven deploy workflow, rollback, pre-demo caveats
+│   ├── DEPLOY_VERCEL.md           # Git-driven deploy workflow, rollback, live-status caveats
 │   └── ASSETS.md                  # spec for the images and font that are still missing
 ├── public/                        # copied verbatim into dist/ at build time
 │   ├── _redirects                 # Netlify/Cloudflare SPA fallback: /* -> /index.html 200

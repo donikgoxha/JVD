@@ -33,7 +33,9 @@ export const CLINIC = {
   country: 'North Macedonia',
   instagram: 'https://www.instagram.com/jvddentalclinic/',
   instagramHandle: '@jvddentalclinic',
-  email: 'info@jvddental.mk', // TODO confirm the real address
+  // null until the clinic confirms a real mailbox. A published address that
+  // bounces is worse than no address — the UI omits it when null.
+  email: null, // TODO set once confirmed
   // Main published number, shown in the hero, the booking page and the footer's
   // out-of-hours line. Currently Dr. Vleran Selimi's line — swap if the clinic
   // has a dedicated reception number.
@@ -54,7 +56,10 @@ export const LOCATIONS = [
     street: 'Boulevard Goce Delchev 58',
     address: 'Boulevard Goce Delchev 58, 1230 Gostivar',
     note: 'Dr. Jeton Selimi',
-    hours: 'Mon–Fri 09:00–19:00 · Sat 09:00–14:00', // TODO confirm
+    // null until confirmed. Publishing guessed hours sends patients to a
+    // closed door; every surface omits the line when null and shows the
+    // phone number instead.
+    hours: null, // TODO set once confirmed
     mapsUrl:
       'https://www.google.com/maps/search/?api=1&query=Boulevard%20Goce%20Delchev%2058%2C%201230%20Gostivar%2C%20North%20Macedonia',
     phone: '+389 70 228 534',
@@ -65,7 +70,7 @@ export const LOCATIONS = [
     street: 'Brakja Gjinoski 64',
     address: 'Brakja Gjinoski 64, 1230 Gostivar',
     note: 'Dr. Vleran Selimi · Dr. Donjet Selimi',
-    hours: 'Mon–Fri 09:00–19:00 · Sat 09:00–14:00', // TODO confirm
+    hours: null, // TODO set once confirmed
     mapsUrl:
       'https://www.google.com/maps/search/?api=1&query=Brakja%20Gjinoski%2064%2C%201230%20Gostivar%2C%20North%20Macedonia',
     phone: '+389 70 973 773',

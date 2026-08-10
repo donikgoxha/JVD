@@ -2,8 +2,12 @@ import { useMemo, useState } from 'react'
 
 /**
  * A self-contained stand-in for the Cal.com embed, used only when
- * VITE_DEMO_BOOKING=1. It exists so the /book flow can be demonstrated end to
+ * VITE_BOOKING_MODE=demo. It exists so the /book flow can be reviewed end to
  * end before any real scheduling account exists.
+ *
+ * INTERNAL REVIEW ONLY — never ship this to a public deployment. A patient
+ * cannot tell a demo calendar from a real one, and a "booking" that reaches
+ * nobody is a missed appointment. The public site uses VITE_BOOKING_MODE=phone.
  *
  * Deliberately NOT wired to a third party. Pointing the demo at a stranger's
  * public Cal.com page would route real bookings into someone else's inbox, and

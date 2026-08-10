@@ -49,7 +49,7 @@ Anything that changes how the site builds is a committed file, so a deployment i
 reproducible from its commit:
 
 - `vercel.json` — framework, build command, output dir, SPA rewrite, cache and security headers
-- `.env.production` — build-time `VITE_` flags (currently `VITE_DEMO_BOOKING=1`)
+- `.env.production` — build-time `VITE_` flags (`VITE_BOOKING_MODE`, `VITE_SITE_URL`)
 - `public/robots.txt` — indexing policy
 
 Adding a `VITE_` variable in the Vercel dashboard instead would make the dashboard and the
@@ -87,56 +87,45 @@ npx vercel logs <deployment-url>        # build/runtime logs
 
 ---
 
-## Before you send the link to a client
+## Live status
 
-The site builds and runs, but three things will be visibly unfinished on a live demo. None
-block deployment — decide which ones you want to fix first.
+The site is public and indexable. `public/robots.txt` allows all crawlers and points at
+`sitemap.xml`.
 
-### 1. Images — handled
+**Booking is by phone.** `.env.production` sets `VITE_BOOKING_MODE=phone`, so `/book` resolves
+the patient's clinic + dentist choice to the right direct number instead of showing a
+calendar. This is correct while no Cal.com account exists — a live medical site must never
+display availability it cannot honour. Switching to the real embed is one commit: create the
+three event types (`docs/BOOKING_SETUP.md`), then set `VITE_BOOKING_MODE=cal`.
 
-No photography is committed, but nothing renders broken. `src/components/Img.jsx` catches the
-404 and swaps in a hatched, brand-tinted placeholder with a tooth or portrait glyph, sized to
-the exact same box. The layout reads as deliberate rather than broken.
+Never deploy `VITE_BOOKING_MODE=demo` publicly. Patients cannot tell a demo calendar from a
+real one, and a booking that reaches nobody is a missed appointment.
 
-Drop the real files in and the component becomes a no-op — no code change needed. Paths and
-dimensions are in `docs/ASSETS.md`.
+### What is real on the live site
 
-### 2. Booking calendar — handled by demo mode
+Confirmed: practitioner names, all phone numbers, both street addresses, the Instagram link.
 
-The Cal.com event types in `src/data/clinic.js` do not exist yet, so an unmodified build shows
-"The calendar could not load." on step 3.
+Not yet supplied, and therefore **not published** rather than guessed:
 
-`.env.production` currently carries `VITE_DEMO_BOOKING=1`, so step 3 renders
-`src/components/DemoCalendar.jsx` instead: a working month grid, sample time slots, and a
-confirmation step — under an amber **"Demo mode — sample availability. No appointment is
-created."** banner.
+- **Opening hours** — `LOCATIONS[*].hours` is `null`. Every surface omits the line and shows a
+  phone number instead, and `openingHours` is left out of the structured data.
+- **Email** — `CLINIC.email` is `null`; the footer link disappears. A published address that
+  bounces is worse than none.
+- **Practitioner specialties and bios** — all three read `Dentist` with empty bios.
+- **The case gallery** — four invented before/after studies, each captioned as a real patient
+  with written consent, were deleted. Restoring one needs photographs, a treatment
+  description, and consent on file.
+- **Clinic history** — the invented timeline was deleted.
 
-It is deliberately not pointed at a third party. The two well-known public Cal.com links are
-a joke calendar and Cal.com's own sales calendar; either would route real bookings into a
-stranger's inbox.
+Still unverified but published, and the first thing to confirm: the six-item `SERVICES` list
+in `src/data/clinic.js`. Standard for a general practice, but nobody has confirmed JVD offers
+implants or orthodontics.
 
-Once you have a real Cal.com account, one throwaway event type demos the genuine embed for
-every doctor/location pair. Edit `.env.production`:
+### Images
 
-```dotenv
-VITE_CAL_DEMO_LINK=yourname/consultation
-```
-
-`VITE_CAL_DEMO_LINK` outranks `VITE_DEMO_BOOKING`. With **neither** line present the site
-uses the real per-combination slugs from `src/data/clinic.js` — that is the production
-configuration, and deleting both lines is the commit that ships it.
-
-### 3. Some copy is invented
-
-Written as placeholder, still reading as fact:
-
-- `Work.jsx` — the four case studies, including the line about patient consent
-- `About.jsx` — the history timeline and the four values cards (written estimates,
-  sterilisation logging)
-- `SERVICES` and both clinics' opening hours in `clinic.js`
-
-Fine for a layout demo. Not fine to leave on a public production domain. Everything is marked
-`TODO` in the source; `README.md` section 4 is the full checklist.
+No photography is committed. `src/components/Img.jsx` draws a hatched brand placeholder and
+fades a real photo in over it once one exists, so nothing renders broken. Paths and
+dimensions: `docs/ASSETS.md`.
 
 ---
 
@@ -146,5 +135,11 @@ Once the client approves and supplies a domain: Vercel dashboard → Project →
 Domains → Add. Vercel prints the DNS records to set at the registrar and issues the TLS
 certificate automatically.
 
-If you point a real domain at the site, update the placeholder origin `https://jvddental.mk`
-in `public/sitemap.xml`, `public/robots.txt` and `.env.example`.
+Pointing a real domain at the site means changing the origin in **three files, one commit**:
+
+- `VITE_SITE_URL` in `.env.production` — drives the canonical tag, `og:url` and the JSON-LD
+- the `Sitemap:` line in `public/robots.txt`
+- every `<loc>` in `public/sitemap.xml`
+
+A canonical tag pointing at the old origin is the classic way to make a new domain invisible
+to search.
