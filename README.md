@@ -27,9 +27,9 @@ npm run preview       # serve the built dist/ locally to sanity-check it
 npm run lint          # eslint . (flat config, ESLint 9)
 ```
 
-Environment variables are optional. Copy `.env.example` to `.env.local` if you want to
-override the Cal.com team slug or the canonical site URL. `.env.local` is gitignored;
-`.env.example` is committed and documents both variables. Note that Vite **inlines** every
+Environment variables: `.env.production` is **committed** and holds the build-time flags that
+every deployment depends on (currently `VITE_DEMO_BOOKING=1`). Copy `.env.example` to
+`.env.local` for personal overrides — `.env.local` is gitignored and never reaches a build. Note that Vite **inlines** every
 `VITE_`-prefixed variable into the client bundle — never put a secret in one.
 
 ---
@@ -192,12 +192,13 @@ jvd-dental/
 ├── vite.config.js                 # react + tailwind plugins; es2020 target; vendor manualChunks split
 ├── eslint.config.js               # ESLint 9 flat config: react-hooks + react-refresh rules
 ├── vercel.json                    # Vercel: framework/build/output, SPA rewrite, asset cache + security headers
-├── .env.example                   # documents VITE_CAL_TEAM_SLUG and VITE_SITE_URL; copy to .env.local
+├── .env.example                   # documents every VITE_ variable; copy to .env.local for local overrides
+├── .env.production                # COMMITTED build-time flags (currently VITE_DEMO_BOOKING=1)
 ├── .gitignore                     # node_modules, dist, .env.local, editor and OS noise
 ├── README.md                      # this file
 ├── docs/
 │   ├── BOOKING_SETUP.md           # operator guide for wiring Cal.com (or Calendly/Acuity)
-│   ├── DEPLOY_VERCEL.md           # CLI and Git routes to a Vercel demo URL, plus pre-demo caveats
+│   ├── DEPLOY_VERCEL.md           # Git-driven deploy workflow, rollback, pre-demo caveats
 │   └── ASSETS.md                  # spec for the images and font that are still missing
 ├── public/                        # copied verbatim into dist/ at build time
 │   ├── _redirects                 # Netlify/Cloudflare SPA fallback: /* -> /index.html 200

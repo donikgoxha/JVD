@@ -1,97 +1,89 @@
-# Deploying the demo to Vercel
+# Deploying to Vercel
 
-Two routes. Pick one.
+**Deployments come from Git. Do not deploy from the CLI.**
 
-- **Route A — CLI.** Fastest. One command, a preview URL in about a minute. No Git required.
-- **Route B — Git integration.** Slower to set up, but every push redeploys and each branch
-  gets its own preview URL. Use this once the client starts asking for changes.
-
-Everything below assumes the project root is `jvd-dental/`, **not** the parent folder. The
-`vercel.json` that configures the build lives inside `jvd-dental/`.
+The Vercel project `jvd-dental` is connected to `github.com/donikgoxha/JVD`. Pushing is the
+only step — Vercel builds the commit and publishes it. Nothing about a deployment should
+exist outside the repository.
 
 ---
 
-## Route A — Vercel CLI
-
-### 1. Log in
-
-The CLI opens a browser and authenticates against your own Vercel account. Run it yourself:
+## The workflow
 
 ```bash
-npx vercel login
+git add -A
+git commit -m "fix: whatever changed"
+git push
 ```
 
-Pick "Continue with GitHub" (or email). Nothing else in this guide works until this
-succeeds — `npx vercel whoami` should print your username afterwards.
+That is the whole thing.
 
-### 2. Deploy a preview
-
-From inside `jvd-dental/`:
-
-```bash
-npx vercel
-```
-
-First run asks a short series of questions. The answers that matter:
-
-| Prompt | Answer |
+| Branch | Result |
 | --- | --- |
-| Set up and deploy? | `y` |
-| Which scope? | your personal account |
-| Link to existing project? | `n` |
-| Project name | `jvd-dental` |
-| In which directory is your code located? | `./` |
-| Want to modify settings? | `n` — `vercel.json` already sets framework, build command and output dir |
+| `main` | production — `https://jvd-dental.vercel.app` |
+| any other branch | its own preview URL, `noindex` by default |
+| pull request | preview URL commented on the PR |
 
-It prints a URL like `https://jvd-dental-abc123.vercel.app`. That is your demo link. It is
-public to anyone with the URL, and it is not indexed by search engines unless you promote it
-to production.
+Check the build at <https://vercel.com/donikgoxha/jvd-dental>. A failed build leaves the
+previous deployment serving, so a broken push never takes the site down.
 
-### 3. Promote to a stable URL
-
-Preview URLs change on every deploy. For a link you can send once and keep sending:
+Catch errors before pushing:
 
 ```bash
-npx vercel --prod
+npm run lint && npm run build
 ```
 
-That publishes to `https://jvd-dental.vercel.app` (or whatever project name you chose), and
-the URL stays put across redeploys.
+### Project settings (already correct — listed so a change is deliberate)
 
-### 4. Redeploy after changes
+| Setting | Value | Why |
+| --- | --- | --- |
+| Root Directory | `.` | the repo root **is** the Vite app; there is no subfolder |
+| Framework Preset | Vite | auto-detected |
+| Build Command | `npm run build` | also pinned in `vercel.json` |
+| Output Directory | `dist` | also pinned in `vercel.json` |
+| Production Branch | `main` | |
 
-```bash
-npm run build     # optional, catches errors locally first
-npx vercel --prod
-```
+### Configuration lives in the repo, not the dashboard
+
+Anything that changes how the site builds is a committed file, so a deployment is fully
+reproducible from its commit:
+
+- `vercel.json` — framework, build command, output dir, SPA rewrite, cache and security headers
+- `.env.production` — build-time `VITE_` flags (currently `VITE_DEMO_BOOKING=1`)
+- `public/robots.txt` — indexing policy
+
+Adding a `VITE_` variable in the Vercel dashboard instead would make the dashboard and the
+repo disagree, and the next person reading the code would have no way to know. Keep them in
+`.env.production`. Real secrets are the exception — those go in the dashboard as **non-**`VITE_`
+variables, because anything `VITE_`-prefixed is inlined into the public bundle.
 
 ---
 
-## Route B — Git integration
+## Rolling back
 
-1. Create a Git repository. The parent folder is not a repo yet, so from `JVD_Claude/`:
+Do not hand-edit and re-push under pressure. Either:
 
-   ```bash
-   git init -b main
-   git add .
-   git commit -m "feat: JVD Dental Clinic marketing site"
-   ```
+- **Vercel dashboard → Deployments → an older one → Promote to Production.** Instant, and it
+  does not touch Git.
+- Or `git revert <sha> && git push`, which keeps Git and the live site in agreement. Prefer
+  this once the fire is out.
 
-2. Create an empty repo on GitHub and push to it.
+---
 
-3. In the Vercel dashboard: **Add New → Project → Import** the repo.
+## About the CLI
 
-4. **Critical setting.** The Vite app is in a subfolder, so set:
+`npx vercel --prod` still works and will happily publish whatever is in your working
+directory — uncommitted edits included. That is exactly the failure mode this setup avoids:
+a live site that no commit can reproduce. Vercel has no switch to disable it, so the rule is
+a convention. Do not use it.
 
-   - **Root Directory** → `jvd-dental`
-   - Framework Preset → Vite (auto-detected once the root directory is right)
-   - Build Command → `npm run build` (default)
-   - Output Directory → `dist` (default)
+The CLI is still useful read-only:
 
-   Getting Root Directory wrong is the single most common failure here — the build errors with
-   "No package.json found" or deploys an empty site.
-
-5. Deploy. Every push to `main` redeploys production; every other branch gets a preview URL.
+```bash
+npx vercel project inspect jvd-dental   # confirm settings
+npx vercel list jvd-dental              # recent deployments and their source
+npx vercel logs <deployment-url>        # build/runtime logs
+```
 
 ---
 
@@ -100,21 +92,39 @@ npx vercel --prod
 The site builds and runs, but three things will be visibly unfinished on a live demo. None
 block deployment — decide which ones you want to fix first.
 
-### 1. Every image 404s
+### 1. Images — handled
 
-No photography is committed. Hero, team portraits and the whole before/after gallery render
-as flat blue rectangles with the alt text showing. See `docs/ASSETS.md` for the exact
-paths and dimensions. This is the most obvious gap on a first look.
+No photography is committed, but nothing renders broken. `src/components/Img.jsx` catches the
+404 and swaps in a hatched, brand-tinted placeholder with a tooth or portrait glyph, sized to
+the exact same box. The layout reads as deliberate rather than broken.
 
-### 2. The booking calendar shows its error state
+Drop the real files in and the component becomes a no-op — no code change needed. Paths and
+dimensions are in `docs/ASSETS.md`.
 
-The Cal.com event types in `src/data/clinic.js` do not exist yet, so `/book` reaches step 3,
-fails to load the iframe, and falls back to "The calendar could not load." The selection flow
-itself (location, then doctor) demos correctly.
+### 2. Booking calendar — handled by demo mode
 
-To make the calendar live for the demo, create a free Cal.com account and three event types as
-described in `docs/BOOKING_SETUP.md`, then update `calLinks`. A single throwaway event type
-pointed at all three entries is enough to show the flow working end to end.
+The Cal.com event types in `src/data/clinic.js` do not exist yet, so an unmodified build shows
+"The calendar could not load." on step 3.
+
+`.env.production` currently carries `VITE_DEMO_BOOKING=1`, so step 3 renders
+`src/components/DemoCalendar.jsx` instead: a working month grid, sample time slots, and a
+confirmation step — under an amber **"Demo mode — sample availability. No appointment is
+created."** banner.
+
+It is deliberately not pointed at a third party. The two well-known public Cal.com links are
+a joke calendar and Cal.com's own sales calendar; either would route real bookings into a
+stranger's inbox.
+
+Once you have a real Cal.com account, one throwaway event type demos the genuine embed for
+every doctor/location pair. Edit `.env.production`:
+
+```dotenv
+VITE_CAL_DEMO_LINK=yourname/consultation
+```
+
+`VITE_CAL_DEMO_LINK` outranks `VITE_DEMO_BOOKING`. With **neither** line present the site
+uses the real per-combination slugs from `src/data/clinic.js` — that is the production
+configuration, and deleting both lines is the commit that ships it.
 
 ### 3. Some copy is invented
 

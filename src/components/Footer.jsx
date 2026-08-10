@@ -69,6 +69,22 @@ export default function Footer() {
           <p>Emergencies outside opening hours: call {CLINIC.phone}.</p>
         </div>
       </div>
+
+      {/* Build credit — the last line on the page. */}
+      <div className="border-t border-white/10">
+        <p className="footer__craft container-page py-5 text-center text-xs text-brand-300">
+          Crafted by{' '}
+          <a
+            href="https://dgdsmart.com"
+            target="_blank"
+            rel="noopener"
+            className="font-medium text-brand-100 underline-offset-4 transition-colors hover:text-white hover:underline"
+          >
+            DGDsmart
+          </a>
+          <span className="tm align-super text-[0.7em]">™</span>
+        </p>
+      </div>
     </footer>
   )
 }
