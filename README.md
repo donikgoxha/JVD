@@ -44,7 +44,7 @@ every deployment depends on (`VITE_BOOKING_MODE`, `VITE_SITE_URL`). Copy `.env.e
 | Styling | **Tailwind CSS v4** via `@tailwindcss/vite` | CSS-first config, **no `tailwind.config.js`** |
 | Components | none | no shadcn/ui, no MUI, no Radix — components are local JSX |
 | Icons | none | every icon is an inline `<svg>` in the component that uses it |
-| Fonts | self-hosted | `Inter var` from `/fonts/inter-var.woff2`, no Google Fonts request |
+| Fonts | self-hosted | `Inter var` from `/fonts/` (latin + latin-ext subsets), no Google Fonts request |
 | Scheduling | Cal.com vanilla embed | loaded on demand by `src/hooks/useCalEmbed.js` |
 | Linting | **ESLint 9** flat config | `eslint.config.js`: hooks correctness + Fast Refresh safety |
 
@@ -199,13 +199,18 @@ jvd-dental/
 ├── docs/
 │   ├── BOOKING_SETUP.md           # operator guide for wiring Cal.com (or Calendly/Acuity)
 │   ├── DEPLOY_VERCEL.md           # Git-driven deploy workflow, rollback, live-status caveats
-│   └── ASSETS.md                  # spec for the images and font that are still missing
+│   └── ASSETS.md                  # the clinic photography still missing, plus what is committed
 ├── public/                        # copied verbatim into dist/ at build time
 │   ├── _redirects                 # Netlify/Cloudflare SPA fallback: /* -> /index.html 200
-│   ├── favicon.svg                # site icon, referenced from index.html
+│   ├── favicon.svg                # site icon, referenced from index.html; source of the PNG icons
+│   ├── apple-touch-icon.png       # 180x180 iOS home-screen icon
+│   ├── icon-192.png, icon-512.png # manifest icons
+│   ├── icon-maskable-512.png      # manifest maskable icon (glyph inside the 80% safe zone)
+│   ├── og-cover.jpg               # 1200x630 link-preview card; absolute og:image injected by vite.config.js
+│   ├── fonts/                     # Inter variable: latin + latin-ext woff2 subsets, OFL.txt licence
 │   ├── site.webmanifest           # PWA manifest — linked from index.html via <link rel="manifest">
-│   ├── robots.txt                 # allow-all + sitemap pointer (placeholder domain)
-│   └── sitemap.xml                # the four real routes (placeholder domain)
+│   ├── robots.txt                 # allow-all + sitemap pointer
+│   └── sitemap.xml                # the four real routes
 └── src/
     ├── main.jsx                   # entry: createRoot + StrictMode + BrowserRouter, imports index.css
     ├── index.css                  # Tailwind v4 entry: @theme tokens, @font-face, base layer, @utility set
@@ -214,16 +219,19 @@ jvd-dental/
     │   ├── Navbar.jsx             # sticky header, skip link, mobile drawer w/ scroll lock, inline logo SVG
     │   ├── Footer.jsx             # clinic/location/nav columns; exports the shared InstagramGlyph SVG
     │   ├── Section.jsx            # presentational wrapper: eyebrow + title + lead + children
+    │   ├── Img.jsx                # <img> with a branded placeholder underneath; photo fades in on decode
+    │   ├── DemoCalendar.jsx       # sample calendar for VITE_BOOKING_MODE=demo (internal review only)
     │   └── InstagramCard.jsx      # full-width Instagram CTA, lead element of the Our Work page
     ├── data/
     │   └── clinic.js              # single source of truth: CLINIC, LOCATIONS, DOCTORS, SERVICES, NAV
     ├── hooks/
-    │   └── useCalEmbed.js         # loads cal.com embed.js once, mounts an inline calendar, tracks status
+    │   ├── useCalEmbed.js         # loads cal.com embed.js once, mounts an inline calendar, tracks status
+    │   └── usePageMeta.js         # per-route title, description, canonical; noindex on the 404
     └── pages/
         ├── Home.jsx               # "/" — hero, services grid, locations, CTA (only page in initial bundle)
-        ├── About.jsx              # "/about" — mission, values, timeline, doctor cards (lazy)
-        ├── Work.jsx               # "/our-work" — Instagram card + before/after case gallery (lazy)
-        ├── Booking.jsx            # "/book" — 3-step location -> doctor -> calendar flow (lazy)
+        ├── About.jsx              # "/about" — mission, values, doctor cards (lazy)
+        ├── Work.jsx               # "/our-work" — Instagram card + services list (lazy)
+        ├── Booking.jsx            # "/book" — 3-step location -> doctor -> call / calendar flow (lazy)
         └── NotFound.jsx           # "*" — 404 page (lazy)
 ```
 
@@ -288,85 +296,57 @@ with nobody assigned. It logs and never throws — a data typo must not white-sc
 production.
 
 Things that stay hardcoded on purpose and are worth a look when the counts change: the
-`SERVICES` list, the About-page timeline, and the `Work.jsx` case gallery. None of them
-derive from `clinic.js`.
+`SERVICES` list and the About-page `VALUES`. Neither derives from `LOCATIONS` or `DOCTORS`.
 
 ---
 
-## 4. Content you must replace before launch
+## 4. Content still to come from the clinic
 
-Practitioner names, phone numbers and the two street addresses are **real and confirmed** and
-already in the code. Everything else below is placeholder or missing.
+The site is live, and everything it publishes is either confirmed or deliberately left out.
+Practitioner names, all phone numbers, both street addresses and the Instagram link are
+**real and confirmed**. What follows is what the clinic still has to supply; each item is
+currently **omitted** from the site rather than guessed, so supplying it is purely additive.
 
 ### 4.1 Text and contact details — `src/data/clinic.js`
 
-Names (`Dr. Jeton Selimi`, `Dr. Vleran Selimi`, `Dr. Donjet Selimi`), the per-practitioner and
-per-location phone numbers, and both addresses (`Boulevard Goce Delchev 58, 1230 Gostivar` and
-`Brakja Gjinoski 64, 1230 Gostivar`) are confirmed — leave them as they are. The eleven lines
-still carrying a `TODO` in that file are what is outstanding:
+The lines still carrying a `TODO` in that file:
 
-- [ ] `CLINIC.email` — currently `info@jvddental.mk`, unconfirmed
-- [ ] `LOCATIONS[*].hours` — both clinics carry the same guessed
-      `Mon–Fri 09:00–19:00 · Sat 09:00–14:00`
+- [ ] `CLINIC.email` — `null`; the footer link is hidden until a real mailbox exists
+- [ ] `LOCATIONS[*].hours` — `null`; every surface shows a phone number instead, and
+      `openingHours` is left out of the structured data
 - [ ] `DOCTORS[*].role` — all three read `Dentist`, a stand-in for each practitioner's
       confirmed specialty
 - [ ] `DOCTORS[*].bio` — all three are empty strings. The pages render nothing rather than
       invent credentials for a named person; keep it that way until the clinic supplies copy.
-- [ ] `SERVICES` — the six-item list is a plausible guess, not the clinic's own menu
-- [ ] `DOCTORS[*].calLinks` — the Cal.com slugs, once the real event types exist (section 4.4)
+- [ ] `SERVICES` — the six-item list is standard for a general practice but **published and
+      unverified**. This is the first thing to confirm.
 
 Also verify, even though they are not marked TODO: `CLINIC.phone` (currently Dr. Vleran
-Selimi's line rather than a dedicated reception number), `LOCATIONS[*].note`, and
-`CLINIC.instagram` / `instagramHandle`.
+Selimi's line rather than a dedicated reception number) and `LOCATIONS[*].note`.
 
-Unverified claims that live outside `clinic.js`:
+Outside `clinic.js`: the clinic's own story (founding year, how the second clinic came about)
+is a `TODO` comment in `src/pages/About.jsx`. The invented timeline and the invented
+before/after case studies were removed; see the note at the top of `src/pages/Work.jsx`
+before putting a gallery back.
 
-- [ ] `src/pages/About.jsx` — the `TIMELINE` array (2012 / 2016 / 2020 / 2024 milestones).
-- [ ] `src/pages/Work.jsx` — the `CASES` array: four invented case studies with clinical
-      descriptions and durations.
+### 4.2 Photography
 
-### 4.2 Images and fonts — none are committed
+`docs/ASSETS.md` is the authoritative spec. Four photos are referenced and not yet committed:
+the hero (`public/hero-clinic.webp`, 960 × 1200) and the three team portraits
+(`public/team/*.webp`, 400 × 400). `Img.jsx` draws a branded placeholder until each file
+exists, and fades the photo in automatically when it does — no code change needed.
 
-`docs/ASSETS.md` is the authoritative spec, with export rules and a full path table.
-Summary of what is referenced by code and currently 404s:
+**Patient photography requires documented written consent**, and must be on file before any
+before/after image is published.
 
-| File to add at `public/…` | Referenced by | Dimensions |
-| --- | --- | --- |
-| `hero-clinic.webp` | `src/pages/Home.jsx` | 960 × 1200 (4:5) |
-| `team/jeton-selimi.webp`, `team/vleran-selimi.webp`, `team/donjet-selimi.webp` | `src/data/clinic.js` → `About.jsx`, `Booking.jsx` | 400 × 400 (1:1) |
-| `work/{veneers,implant,aligners,whitening}-before.webp` and `-after.webp` | `src/pages/Work.jsx` | 600 × 450 (4:3), 8 files |
-| `og-cover.jpg` | `index.html` (`og:image`) | 1200 × 630, JPEG not WebP |
-| `fonts/inter-var.woff2` | `src/index.css` `@font-face` | — |
+The fonts, the PNG app icons and the `og-cover.jpg` share card are committed.
 
-Notes:
+### 4.3 Domain
 
-- The `width`/`height` attributes in the JSX must match the real intrinsic image size, or the
-  browser reserves the wrong space and you reintroduce layout shift.
-- Keep each before/after pair at identical dimensions; the grid places them side by side and
-  mismatched ratios read as distortion rather than result.
-- **Patient photography requires documented written consent.** `Work.jsx` already states on the
-  page that consent was given — make that true before publishing, and keep the forms on file.
-- `inter-var.woff2` must be subset to **latin + latin-ext**. All site copy, including both
-  street addresses, is Latin script; add a Cyrillic subset only if the copy is translated to
-  Macedonian.
-- The font `<link rel="preload">` in `index.html` is currently **commented out** on purpose, so
-  the missing file does not cost a failed request on every page load. Uncomment it when the
-  woff2 lands — a preload materially improves the swap, and `@font-face` alone will not
-  discover the font until the CSS is parsed.
-
-### 4.3 Site metadata and SEO placeholders
-
-- [ ] **`public/robots.txt`** — the `Sitemap:` line points at `https://jvddental.mk`, an
-      unconfirmed domain. A sitemap declared on the wrong origin is ignored.
-- [ ] **`public/sitemap.xml`** — all four `<loc>` entries use the same placeholder host.
-- [ ] **`.env.example`** — `VITE_SITE_URL` carries the same unconfirmed domain.
-- [ ] **`index.html` `og:image`** — currently the root-relative `/og-cover.jpg`. Most social
-      scrapers require an absolute URL; change it to `https://<real-domain>/og-cover.jpg`.
-
-Two items previously listed here are resolved: `index.html` now carries
-`<link rel="manifest" href="/site.webmanifest" />`, so the manifest is actually read, and
-`<html lang="en">` now matches the English interface copy (see the accessibility notes in
-section 6).
+The site runs on `https://jvd-dental.vercel.app`. When the clinic supplies a real domain,
+change the origin in `.env.production`, `public/robots.txt` and `public/sitemap.xml` in one
+commit — `docs/DEPLOY_VERCEL.md` → *Custom domain*. The canonical tag, `og:url`, the absolute
+`og:image` and the JSON-LD all follow `VITE_SITE_URL` automatically.
 
 ### 4.4 Booking slugs
 
@@ -540,9 +520,10 @@ These behaviours are already implemented. Preserve them when editing.
 - **Placeholder background.** Every image carries `bg-brand-100`, so a slow or missing image
   shows a brand-tinted block rather than a white hole.
 - **Font loading.** `font-display: swap` means text is readable in the fallback face
-  immediately and swaps without blocking render. Re-enable the commented-out
-  `<link rel="preload">` in `index.html` once the woff2 exists, and keep it pointing at the same
-  URL as the `@font-face` `src`, or the font is fetched twice.
+  immediately and swaps without blocking render. `index.html` preloads the latin subset; keep
+  that `<link rel="preload">` pointing at the same URL as the first `@font-face` `src`, or the
+  font is fetched twice. The latin-ext face is `unicode-range`-gated and only downloads when
+  a page needs it.
 - **Third-party isolation.** The only third-party runtime is the Cal.com embed, and it is
   confined to the `/book` chunk. Do not import `useCalEmbed` from a component the homepage
   reaches — that would pull `embed.js` onto every page load and undo the split.

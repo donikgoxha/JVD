@@ -1,72 +1,58 @@
-# Missing assets
+# Assets
 
-Every path below is referenced by the code but **is not committed**. Until the
-real files land in `public/`, each one 404s — images fall back to the flat
-`bg-brand-100` placeholder colour, and the font falls back to system sans.
+## Still missing — clinic photography
 
-Drop each file at the exact path shown (paths are relative to this `public/`
-directory, so `/team/jeton-selimi.webp` means `public/team/jeton-selimi.webp`).
+Every path below is referenced by the code but **is not committed**, because it
+has to be a real photograph of the real clinic and team. Until each file lands,
+`src/components/Img.jsx` draws a hatched brand placeholder in its place, so
+nothing renders broken — and the photo fades in over it automatically once the
+file exists. No code change is needed when you add them.
 
-## Export rules
+Drop each file at the exact path shown (paths are relative to `public/`, so
+`/team/jeton-selimi.webp` means `public/team/jeton-selimi.webp`).
+
+### Export rules
 
 - **WebP, quality ~80.** Above that the files get big for no visible gain.
 - **Match the listed pixel dimensions.** The `width`/`height` attributes are
-  hardcoded in JSX to reserve layout space; a mismatched file makes the browser
-  letterbox or crop it via `object-cover` and shifts the layout.
-- **Before/after pairs must be pixel-identical in dimensions**, and shot at the
-  same angle, distance and lighting. The two halves sit side by side in a
-  `grid-cols-2` and any difference reads as a distortion, not a result.
-- Photograph real patients only with **written consent** — `/our-work` states
-  publicly that consent was given.
-
-## Photography
+  hardcoded in JSX to reserve layout space; a mismatched file is cropped by
+  `object-cover` and the framing will not be what you chose.
 
 | Path | Aspect | Dimensions | Used by |
 | --- | --- | --- | --- |
 | `/hero-clinic.webp` | 4:5 | 960 × 1200 | `src/pages/Home.jsx` — hero, eager + `fetchPriority="high"` |
-| `/og-cover.jpg` | 1.91:1 | 1200 × 630 | `index.html` — `og:image`. JPEG, not WebP: some scrapers still reject WebP. |
+| `/team/jeton-selimi.webp` | 1:1 | 400 × 400 | Dr. Jeton Selimi — `About.jsx`, `Booking.jsx` |
+| `/team/vleran-selimi.webp` | 1:1 | 400 × 400 | Dr. Vleran Selimi — `About.jsx`, `Booking.jsx` |
+| `/team/donjet-selimi.webp` | 1:1 | 400 × 400 | Dr. Donjet Selimi — `About.jsx`, `Booking.jsx` |
 
-> Note: `Home.jsx` currently declares `width="960" height="1120"`, which is not
-> 4:5. Export the hero at **960 × 1200** to match the `aspect-[4/5]` class, and
-> correct the `height` attribute in that file when you do.
+Team portraits: head and shoulders, centred, same background for all three so
+the row reads as one set.
 
-## Team portraits — 1:1, 400 × 400
+### Before/after gallery
 
-Referenced from `src/data/clinic.js`. Head and shoulders, centred, same
-background for all three so the row reads as one set.
+There is no gallery: the invented case studies were removed (see the note at
+the top of `src/pages/Work.jsx`). Restoring one needs, per case, the
+photographs, a treatment description, and **written patient consent on file**.
+Export each before/after pair at identical dimensions (600 × 450, 4:3) so the
+side-by-side halves do not read as distortion.
 
-| Path | Doctor |
-| --- | --- |
-| `/team/jeton-selimi.webp` | Dr. Jeton Selimi |
-| `/team/vleran-selimi.webp` | Dr. Vleran Selimi |
-| `/team/donjet-selimi.webp` | Donjet Selimi |
-
-## Case gallery — 4:3, 600 × 450 each
-
-Referenced from `src/pages/Work.jsx`. Eight files, four before/after pairs.
-
-| Case | Before | After |
-| --- | --- | --- |
-| Ceramic veneers | `/work/veneers-before.webp` | `/work/veneers-after.webp` |
-| Single implant | `/work/implant-before.webp` | `/work/implant-after.webp` |
-| Clear aligners | `/work/aligners-before.webp` | `/work/aligners-after.webp` |
-| In-chair whitening | `/work/whitening-before.webp` | `/work/whitening-after.webp` |
-
-## Font
+## Committed
 
 | Path | Notes |
 | --- | --- |
-| `/fonts/inter-var.woff2` | Inter **variable** weight 100–900. Declared in `src/index.css` (`@font-face`, `font-display: swap`). Subset to latin + latin-ext. All site copy including the two street addresses is Latin script; add a Cyrillic subset only if the copy is translated to Macedonian. |
+| `/favicon.svg` | Site icon, the source for every PNG icon below. |
+| `/apple-touch-icon.png` | 180 × 180, iOS home screen. Full-bleed square — iOS rounds the corners itself. |
+| `/icon-192.png`, `/icon-512.png` | Manifest icons (`purpose: any`). |
+| `/icon-maskable-512.png` | Manifest icon (`purpose: maskable`); the glyph sits inside the 80% safe zone so Android's circle/squircle crop never clips it. |
+| `/og-cover.jpg` | 1200 × 630 link-preview card: name, city, both street addresses. JPEG, not WebP — some scrapers still reject WebP. `vite.config.js` emits it as an **absolute** `og:image` / `twitter:image` URL built from `VITE_SITE_URL`. Swap in a photo-based card once clinic photography exists. |
+| `/fonts/inter-var.woff2` | Inter variable 100–900, **latin** subset. Covers all current copy, including both street addresses. Preloaded from `index.html`. |
+| `/fonts/inter-var-latin-ext.woff2` | Inter variable, **latin-ext** subset (ë, ç, č, š …). Declared with a `unicode-range`, so browsers only download it if a page actually renders one of those glyphs. |
+| `/fonts/OFL.txt` | Inter's SIL Open Font License — must ship alongside the font files. |
 
-The `<link rel="preload">` for this font in `index.html` is **commented out** on
-purpose, so a missing file costs nothing. Uncomment it in the same commit that
-adds `public/fonts/inter-var.woff2` — without the preload the font is discovered
-only after the CSS parses, which delays the swap by roughly one round trip.
+The icons and the share card were rendered from `favicon.svg` and the brand
+tokens in `src/index.css` (`--color-brand-600: #1d7791`). If the brand colour
+changes, regenerate them along with the three other hard-coded copies of it
+listed in README section 2.
 
-Until the file lands, `font-display: swap` falls back to the system UI font. The
-build prints one harmless warning: `/fonts/inter-var.woff2 ... didn't resolve at
-build time`. It disappears once the file exists.
-
-## Already committed
-
-`/favicon.svg` and `/site.webmanifest` are in this directory — nothing to do.
+If the copy is ever translated to Macedonian, add a Cyrillic face the same way
+(another `@font-face` with the Cyrillic `unicode-range`).

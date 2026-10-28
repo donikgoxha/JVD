@@ -23,20 +23,27 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!--
-      Local variable font, no external font request.
-      Drop inter-var.woff2 (latin + CYRILLIC subset — the addresses are Cyrillic)
-      into /public/fonts, then uncomment the preload below. Leaving it commented
-      until the file exists avoids a failed request on every page load; the
-      @font-face in index.css already falls back to the system UI font.
-    -->
-    <!-- <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin /> -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!-- Open Graph -->
+    <!--
+      Self-hosted Inter variable font, latin subset — all site copy, including
+      both street addresses, is Latin script. Must stay the same URL as the
+      first @font-face src in index.css, or the font is fetched twice.
+    -->
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Open Graph. og:url and the absolute og:image / twitter:image URLs are
+         injected by vite.config.js from VITE_SITE_URL — scrapers reject
+         root-relative image paths. -->
     <meta property="og:title" content="JVD Dental Clinic — Gostivar" />
     <meta property="og:description" content="A family dental practice with two clinics in Gostivar. Three dentists, one standard of care." />
     <meta property="og:locale" content="en" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="JVD Dental Clinic" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="JVD Dental Clinic — two clinics in Gostivar" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

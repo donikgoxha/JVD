@@ -63,6 +63,8 @@ function structuredData(siteUrl, bookingMode) {
         preconnect +
           `  <link rel="canonical" href="${siteUrl}/" />\n` +
           `    <meta property="og:url" content="${siteUrl}/" />\n` +
+          `    <meta property="og:image" content="${siteUrl}/og-cover.jpg" />\n` +
+          `    <meta name="twitter:image" content="${siteUrl}/og-cover.jpg" />\n` +
           `    <script type="application/ld+json">${jsonLd}</script>\n  </head>`
       )
     },
