@@ -15,16 +15,15 @@
 // Both lists are open-ended. Every page derives its layout from their length,
 // so adding an entry needs NO changes anywhere else in the codebase:
 //
-//   New clinic   -> push to LOCATIONS, then add its id to the `calLinks` of
-//                   whoever works there. Doctors who do not work there simply
-//                   omit the key (or set it to null).
-//   New doctor   -> push to DOCTORS with a `calLinks` map. One key per location
-//                   they consult at.
+//   New clinic   -> push to LOCATIONS, then add its id to the `locations` of
+//                   whoever works there.
+//   New doctor   -> push to DOCTORS with a `locations` list of the clinic ids
+//                   they work at.
 //
 // Copy-paste templates are at the bottom of this file. `validateClinicData()`
-// runs automatically in dev and shouts if a `calLinks` key does not match a
-// real location id — the one mistake that silently hides a doctor from the
-// booking page.
+// runs automatically in dev and shouts if a `locations` entry does not match a
+// real location id — the one mistake that silently drops a doctor from a
+// clinic's card.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const CLINIC = {
@@ -36,18 +35,16 @@ export const CLINIC = {
   // null until the clinic confirms a real mailbox. A published address that
   // bounces is worse than no address — the UI omits it when null.
   email: null, // TODO set once confirmed
-  // Main published number, shown in the hero, the booking page and the footer's
-  // out-of-hours line. Currently Dr. Vleran Selimi's line — swap if the clinic
-  // has a dedicated reception number.
+  // Main published number, shown in the hero, the contact page and the footer.
+  // Currently Dr. Vleran Selimi's line — swap if the clinic has a dedicated
+  // reception number.
   phone: '+389 70 973 773',
-  // Cal.com team slug. Every calLink below is `${calTeam}/${eventSlug}`.
-  calTeam: 'jvd-dental',
 }
 
 /**
  * Clinic locations. Order here is the order they appear on the site.
- * `id` is used in Cal.com event slugs and in the ?location= URL parameter —
- * changing an existing id breaks saved links, so treat ids as permanent.
+ * `id` is the anchor on /contact (`/contact#gjinoski`) — changing an existing
+ * id breaks saved links, so treat ids as permanent.
  */
 export const LOCATIONS = [
   {
@@ -78,12 +75,10 @@ export const LOCATIONS = [
 ]
 
 /**
- * Practitioners. `calLinks` maps a location id to that person's Cal.com event
- * type at that address. A missing key or a null value means "does not consult
- * here", and that combination never renders in the booking UI.
+ * Practitioners. `locations` lists the clinic ids where each one works.
  *
- * `shortName` is what buttons say ("Book with Dr. Jeton") — set explicitly
- * rather than derived, because not every name carries a title the same way.
+ * `shortName` is what buttons say ("Call Dr. Jeton") — set explicitly rather
+ * than derived, because not every name carries a title the same way.
  */
 export const DOCTORS = [
   {
@@ -94,9 +89,7 @@ export const DOCTORS = [
     phone: '+389 70 228 534',
     photo: '/team/jeton-selimi.webp',
     bio: '', // TODO supply — leave empty rather than invent a biography
-    calLinks: {
-      'goce-delchev': 'jvd-dental/jeton-selimi-goce-delchev',
-    },
+    locations: ['goce-delchev'],
   },
   {
     id: 'vleran-selimi',
@@ -106,9 +99,7 @@ export const DOCTORS = [
     phone: '+389 70 973 773',
     photo: '/team/vleran-selimi.webp',
     bio: '', // TODO
-    calLinks: {
-      gjinoski: 'jvd-dental/vleran-selimi-gjinoski',
-    },
+    locations: ['gjinoski'],
   },
   {
     id: 'donjet-selimi',
@@ -118,13 +109,12 @@ export const DOCTORS = [
     phone: '+389 70 308 555',
     photo: '/team/donjet-selimi.webp',
     bio: '', // TODO
-    calLinks: {
-      gjinoski: 'jvd-dental/donjet-selimi-gjinoski',
-    },
+    locations: ['gjinoski'],
   },
 ]
 
-// TODO confirm this service list with the clinic before launch.
+// TODO confirm this service list with the clinic (ideally against what their
+// Instagram actually shows). Published, but nobody at the clinic has signed it off.
 export const SERVICES = [
   { id: 'checkup', title: 'Check-up & Hygiene', desc: 'Exam, scaling, polishing and a written care plan.', icon: 'sparkle' },
   { id: 'implants', title: 'Dental Implants', desc: 'Single implants to full-arch, planned on 3D imaging.', icon: 'anchor' },
@@ -138,30 +128,71 @@ export const NAV = [
   { to: '/', label: 'Home' },
   { to: '/about', label: 'About Us' },
   { to: '/our-work', label: 'Our Work' },
-  { to: '/book', label: 'Book Now' },
+  { to: '/contact', label: 'Contact' },
 ]
 
+/**
+ * How the practice works. Kept deliberately non-promissory: "Fixed, written
+ * pricing" and "Sterility, verified" used to sit here — operational guarantees
+ * nobody confirmed. Do not add a claim unless the clinic has said it is true.
+ */
+export const VALUES = [
+  {
+    title: 'Explain before we treat',
+    text: 'You hear the plan, the alternatives and the cost before anything starts.',
+  },
+  {
+    title: 'Time to ask',
+    text: 'Questions are part of the appointment, not an interruption to it.',
+  },
+  {
+    title: 'Gentle by default',
+    text: 'We work at your pace, and we stop when you need to stop.',
+  },
+  {
+    title: 'One family, two clinics',
+    text: 'The same people, the same standard, whichever address is closer to you.',
+  },
+]
+
+/**
+ * Posts from @jvddentalclinic, shown as a gallery on Home and Our Work.
+ *
+ * EMPTY ON PURPOSE. Every entry must be a real post: the image downloaded from
+ * the clinic's own Instagram into public/instagram/, its real caption, and its
+ * real permalink. Never fill this with stock or AI images — a dental gallery
+ * reads as "our patients' results". While it is empty the gallery is not
+ * rendered and the pages show the Instagram call-to-action on its own.
+ *
+ *   {
+ *     id: 'C9abc123',                         // the code in the post URL
+ *     image: '/instagram/C9abc123.webp',      // square, 800 x 800 WebP
+ *     alt: 'Upper front teeth after whitening', // describe the photo itself
+ *     caption: 'Whitening — one session',     // short; from the real caption
+ *     url: 'https://www.instagram.com/p/C9abc123/',
+ *   },
+ */
+export const INSTAGRAM_POSTS = []
+
 /* ------------------------------------------------------------------ */
-/* Derived lookups — use these instead of reaching into calLinks        */
+/* Derived lookups                                                      */
 /* ------------------------------------------------------------------ */
 
-/** Practitioners who consult at a given location, in DOCTORS order. */
-export function doctorsAtLocation(locationId) {
-  if (!locationId) return DOCTORS
-  return DOCTORS.filter((doctor) => Boolean(doctor.calLinks[locationId]))
+/** `tel:` href for a display-formatted number: '+389 70 973 773' -> 'tel:+38970973773'. */
+export function telHref(phone) {
+  return `tel:${phone.replace(/\s/g, '')}`
 }
 
-/** Locations where a given practitioner consults, in LOCATIONS order. */
+/** Practitioners who work at a given location, in DOCTORS order. */
+export function doctorsAtLocation(locationId) {
+  return DOCTORS.filter((doctor) => doctor.locations.includes(locationId))
+}
+
+/** Locations where a given practitioner works, in LOCATIONS order. */
 export function locationsForDoctor(doctorId) {
   const doctor = DOCTORS.find((d) => d.id === doctorId)
-  if (!doctor) return LOCATIONS
-  return LOCATIONS.filter((location) => Boolean(doctor.calLinks[location.id]))
-}
-
-/** The Cal.com event link for one doctor at one location, or null. */
-export function calLinkFor(doctorId, locationId) {
-  const doctor = DOCTORS.find((d) => d.id === doctorId)
-  return doctor?.calLinks[locationId] ?? null
+  if (!doctor) return []
+  return LOCATIONS.filter((location) => doctor.locations.includes(location.id))
 }
 
 /* ------------------------------------------------------------------ */
@@ -169,9 +200,9 @@ export function calLinkFor(doctorId, locationId) {
 /* ------------------------------------------------------------------ */
 
 /**
- * Catches the mistakes that fail silently: a calLinks key that does not match
- * any location id (the doctor just never appears), duplicate ids, and a doctor
- * with no bookable location at all. Logs, never throws — a data typo should not
+ * Catches the mistakes that fail silently: a `locations` entry that does not
+ * match any location id (the doctor just never appears), duplicate ids, and a
+ * doctor with no location at all. Logs, never throws — a data typo should not
  * white-screen the site in production.
  */
 export function validateClinicData() {
@@ -186,22 +217,22 @@ export function validateClinicData() {
   }
 
   for (const doctor of DOCTORS) {
-    for (const key of Object.keys(doctor.calLinks)) {
+    for (const key of doctor.locations) {
       if (!locationIds.has(key)) {
         problems.push(
-          `${doctor.name}: calLinks key "${key}" matches no location id. ` +
+          `${doctor.name}: locations entry "${key}" matches no location id. ` +
             `Valid ids: ${[...locationIds].join(', ')}.`
         )
       }
     }
     if (locationsForDoctor(doctor.id).length === 0) {
-      problems.push(`${doctor.name} has no bookable location and will not appear on /book.`)
+      problems.push(`${doctor.name} has no location and will not appear on any clinic card.`)
     }
   }
 
   for (const location of LOCATIONS) {
     if (doctorsAtLocation(location.id).length === 0) {
-      problems.push(`${location.name} has no practitioners and cannot be booked.`)
+      problems.push(`${location.name} has no practitioners.`)
     }
   }
 
@@ -243,11 +274,6 @@ if (import.meta.env?.DEV) {
  *     phone: '+389 70 000 000',
  *     photo: '/team/ime-prezime.webp',    // 400x400 WebP in public/team/
  *     bio: '',
- *     calLinks: {
- *       'goce-delchev': 'jvd-dental/ime-prezime-goce-delchev',
- *       gjinoski: 'jvd-dental/ime-prezime-gjinoski',
- *     },
+ *     locations: ['goce-delchev', 'gjinoski'],
  *   }
- *
- * Then create the matching Cal.com event types — see docs/BOOKING_SETUP.md.
  * ------------------------------------------------------------------ */

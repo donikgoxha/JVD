@@ -15,12 +15,12 @@ import { CLINIC, LOCATIONS, DOCTORS } from './src/data/clinic.js'
  * while LOCATIONS[*].hours is null: publishing guessed hours into a knowledge
  * panel sends patients to a closed door.
  */
-function structuredData(siteUrl, bookingMode) {
+function structuredData(siteUrl) {
   return {
     name: 'jvd-structured-data',
     transformIndexHtml(html) {
       const graph = LOCATIONS.map((loc) => {
-        const staff = DOCTORS.filter((d) => d.calLinks[loc.id]).map((d) => ({
+        const staff = DOCTORS.filter((d) => d.locations.includes(loc.id)).map((d) => ({
           '@type': 'Person',
           name: d.name,
           jobTitle: d.role,
@@ -51,17 +51,9 @@ function structuredData(siteUrl, bookingMode) {
 
       const jsonLd = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
 
-      // Only worth a handshake if the Cal.com embed is actually going to load.
-      const preconnect =
-        bookingMode === 'cal'
-          ? `  <link rel="preconnect" href="https://app.cal.com" crossorigin />\n` +
-            `    <link rel="dns-prefetch" href="https://app.cal.com" />\n  `
-          : ''
-
       return html.replace(
         '</head>',
-        preconnect +
-          `  <link rel="canonical" href="${siteUrl}/" />\n` +
+        `  <link rel="canonical" href="${siteUrl}/" />\n` +
           `    <meta property="og:url" content="${siteUrl}/" />\n` +
           `    <meta property="og:image" content="${siteUrl}/og-cover.jpg" />\n` +
           `    <meta name="twitter:image" content="${siteUrl}/og-cover.jpg" />\n` +
@@ -74,10 +66,9 @@ function structuredData(siteUrl, bookingMode) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const siteUrl = (env.VITE_SITE_URL || 'https://jvd-dental.vercel.app').replace(/\/$/, '')
-  const bookingMode = env.VITE_CAL_DEMO_LINK ? 'cal' : env.VITE_BOOKING_MODE || 'cal'
 
   return {
-    plugins: [react(), tailwindcss(), structuredData(siteUrl, bookingMode)],
+    plugins: [react(), tailwindcss(), structuredData(siteUrl)],
     build: {
       target: 'es2020',
       cssCodeSplit: true,

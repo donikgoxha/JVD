@@ -49,7 +49,7 @@ Anything that changes how the site builds is a committed file, so a deployment i
 reproducible from its commit:
 
 - `vercel.json` — framework, build command, output dir, SPA rewrite, cache and security headers
-- `.env.production` — build-time `VITE_` flags (`VITE_BOOKING_MODE`, `VITE_SITE_URL`)
+- `.env.production` — build-time `VITE_` settings (`VITE_SITE_URL`)
 - `public/robots.txt` — indexing policy
 
 Adding a `VITE_` variable in the Vercel dashboard instead would make the dashboard and the
@@ -92,14 +92,9 @@ npx vercel logs <deployment-url>        # build/runtime logs
 The site is public and indexable. `public/robots.txt` allows all crawlers and points at
 `sitemap.xml`.
 
-**Booking is by phone.** `.env.production` sets `VITE_BOOKING_MODE=phone`, so `/book` resolves
-the patient's clinic + dentist choice to the right direct number instead of showing a
-calendar. This is correct while no Cal.com account exists — a live medical site must never
-display availability it cannot honour. Switching to the real embed is one commit: create the
-three event types (`docs/BOOKING_SETUP.md`), then set `VITE_BOOKING_MODE=cal`.
-
-Never deploy `VITE_BOOKING_MODE=demo` publicly. Patients cannot tell a demo calendar from a
-real one, and a booking that reaches nobody is a missed appointment.
+**There is no online booking.** Every call to action is a phone number, a map link or
+Instagram. `/book`, which used to host a booking flow, now 301-redirects to `/contact`
+(`vercel.json`), so links already printed or posted keep working.
 
 ### What is real on the live site
 

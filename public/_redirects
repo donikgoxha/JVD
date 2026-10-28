@@ -1,3 +1,6 @@
-# Netlify SPA fallback: react-router owns /about, /our-work and /book, so every
+# Booking was removed; old /book links (business cards, bios) land on Contact.
+/book  /contact  301
+
+# Netlify SPA fallback: react-router owns /about, /our-work and /contact, so every
 # path must be served index.html with a 200 (not a 301) or a hard refresh 404s.
 /*    /index.html   200

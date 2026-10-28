@@ -1,23 +1,27 @@
 import { Link } from 'react-router-dom'
-import { CLINIC, LOCATIONS, NAV } from '../data/clinic.js'
+import { CLINIC, LOCATIONS, NAV, telHref } from '../data/clinic.js'
+import { InstagramGlyph, Logo } from './Icons.jsx'
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-line bg-brand-900 text-brand-100">
+    <footer className="mt-20 bg-deep text-brand-100">
       {/* Brand | locations | nav. The locations column is its own auto-fit grid
           so a third or fourth clinic widens that band instead of pushing the
           nav onto a second row. */}
-      <div className="container-page grid gap-10 py-14 lg:grid-cols-[1.4fr_2.2fr_1fr]">
+      <div className="container-page grid gap-12 pb-12 pt-16 lg:grid-cols-[1.3fr_2.2fr_0.8fr]">
         <div>
-          <p className="text-lg font-bold text-white">{CLINIC.name}</p>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-brand-200">
-            Modern, gentle dental care in {CLINIC.city}. {LOCATIONS.length} locations, one standard.
+          <div className="flex items-center gap-3">
+            <Logo className="h-10 w-10" />
+            <p className="font-display text-2xl font-medium text-white">{CLINIC.name}</p>
+          </div>
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-brand-200">
+            A family dental practice in {CLINIC.city}. {LOCATIONS.length} clinics, one standard of care.
           </p>
           <a
             href={CLINIC.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-white hover:text-brand-200"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white/40 hover:bg-white/5"
           >
             <InstagramGlyph className="h-4 w-4" />
             {CLINIC.instagramHandle}
@@ -27,14 +31,14 @@ export default function Footer() {
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,200px),1fr))] gap-8">
           {LOCATIONS.map((loc) => (
             <div key={loc.id}>
-              <p className="text-sm font-semibold text-white">{loc.name}</p>
-              <address className="mt-3 space-y-1.5 text-sm not-italic text-brand-200">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">{loc.name}</p>
+              <address className="mt-4 space-y-2 text-sm not-italic text-brand-100">
                 <p>{loc.address}</p>
                 {loc.hours && <p>{loc.hours}</p>}
-                <a href={`tel:${loc.phone.replace(/\s/g, '')}`} className="block hover:text-white">
+                <a href={telHref(loc.phone)} className="block font-medium text-white hover:text-peach-200">
                   {loc.phone}
                 </a>
-                <a href={loc.mapsUrl} target="_blank" rel="noopener noreferrer" className="block underline underline-offset-4 hover:text-white">
+                <a href={loc.mapsUrl} target="_blank" rel="noopener noreferrer" className="block underline decoration-white/30 underline-offset-4 hover:text-white">
                   Open in Maps
                 </a>
               </address>
@@ -43,8 +47,8 @@ export default function Footer() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold text-white">Navigate</p>
-          <ul className="mt-3 space-y-2 text-sm text-brand-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">Navigate</p>
+          <ul className="mt-4 space-y-2 text-sm">
             {NAV.map((link) => (
               <li key={link.to}>
                 <Link to={link.to} className="hover:text-white">
@@ -63,12 +67,24 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Oversized wordmark — decorative, the name is already in the brand column. */}
+      <div className="container-page overflow-hidden" aria-hidden="true">
+        <p className="font-display select-none text-center text-[22vw] leading-[0.8] font-semibold tracking-tighter text-white/[0.06] lg:text-[11rem]">
+          JVD Dental
+        </p>
+      </div>
+
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col gap-2 py-6 text-xs text-brand-300 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {CLINIC.name}. All rights reserved.
           </p>
-          <p>Outside opening hours: call {CLINIC.phone}.</p>
+          <p>
+            Main line:{' '}
+            <a href={telHref(CLINIC.phone)} className="text-brand-100 hover:text-white">
+              {CLINIC.phone}
+            </a>
+          </p>
         </div>
       </div>
 
@@ -88,15 +104,5 @@ export default function Footer() {
         </p>
       </div>
     </footer>
-  )
-}
-
-export function InstagramGlyph({ className = 'h-5 w-5' }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-      <rect x="3" y="3" width="18" height="18" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
-    </svg>
   )
 }

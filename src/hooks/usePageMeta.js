@@ -18,7 +18,7 @@ const META = {
   '/': {
     title: 'JVD Dental Clinic — Dentist in Gostivar',
     description:
-      'A family dental practice with two clinics in Gostivar. Three dentists, one standard of care. Call to book an appointment.',
+      'A family dental practice with two clinics in Gostivar. Three dentists, one standard of care.',
   },
   '/about': {
     title: 'About Us — JVD Dental Clinic, Gostivar',
@@ -30,10 +30,10 @@ const META = {
     description:
       'See real treatments from our clinics on Instagram, and the dental work we do most in Gostivar.',
   },
-  '/book': {
-    title: 'Book an Appointment — JVD Dental Clinic, Gostivar',
+  '/contact': {
+    title: 'Contact — JVD Dental Clinic, Gostivar',
     description:
-      'Choose your clinic and your dentist in Gostivar, and get the direct number to book your appointment.',
+      'Addresses, directions and direct phone numbers for both JVD Dental clinics and all three dentists in Gostivar.',
   },
 }
 

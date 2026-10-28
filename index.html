@@ -13,12 +13,8 @@
     <title>JVD Dental Clinic — Gostivar</title>
     <meta
       name="description"
-      content="JVD Dental Clinic — a family dental practice with two clinics in Gostivar. Choose your dentist and your clinic, and call to book."
+      content="JVD Dental Clinic — a family dental practice with two clinics in Gostivar. Three dentists, one standard of care."
     />
-
-    <!-- The Cal.com preconnect is injected by vite.config.js, but only when
-         VITE_BOOKING_MODE=cal. In phone mode it would be a wasted handshake
-         on every page load. -->
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
@@ -31,6 +27,8 @@
       first @font-face src in index.css, or the font is fetched twice.
     -->
     <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Fraunces (headings). Same rule: matches the upright @font-face src. -->
+    <link rel="preload" href="/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- Open Graph. og:url and the absolute og:image / twitter:image URLs are
          injected by vite.config.js from VITE_SITE_URL — scrapers reject

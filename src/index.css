@@ -13,17 +13,51 @@
   --color-brand-800: #1f4f60;
   --color-brand-900: #1e4252;
 
+  /* Deep teal for dark bands — darker than brand-900 so white text and the
+     brand-300 accents both clear AA comfortably. */
+  --color-deep: #0c2b36;
+
+  /* Warm neutrals: the page base is cream, not white, so white cards lift. */
+  --color-cream: #faf7f2;
+  --color-sand: #f2ece2;
+
+  /* Peach accent — used sparingly for highlights and glows, never for text
+     on white (it does not pass contrast there). */
+  --color-peach-200: #ffd9c7;
+  --color-peach-300: #ffc2a6;
+  --color-peach-400: #f9a07c;
+
   --color-ink: #0f172a;
-  --color-muted: #64748b;
-  --color-line: #e2e8f0;
+  --color-muted: #5b6b7f;
+  --color-line: #e6e0d6;
 
   --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --radius-card: 1.25rem;
+  --font-display: 'Fraunces var', ui-serif, Georgia, 'Times New Roman', serif;
+  --radius-card: 1.5rem;
+
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-spin-slow: spin 24s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 }
 
-/* Inter variable (OFL, public/fonts/OFL.txt), split by unicode-range. The latin
-   face covers all current copy and is preloaded from index.html; the latin-ext
-   face is only downloaded if a page actually renders one of its glyphs. */
+/* Inter variable (OFL, public/fonts/Inter-OFL.txt), split by unicode-range. The
+   latin face covers all current copy and is preloaded from index.html; the
+   latin-ext face is only downloaded if a page actually renders one of its glyphs. */
 @font-face {
   font-family: 'Inter var';
   src: url('/fonts/inter-var.woff2') format('woff2');
@@ -45,6 +79,25 @@
     U+2C60-2C7F, U+A720-A7FF;
 }
 
+/* Fraunces variable (OFL, public/fonts/Fraunces-OFL.txt), latin subset — the
+   display face for headings. Upright is preloaded; italic is only used for
+   accent words, so it is left to load on demand. */
+@font-face {
+  font-family: 'Fraunces var';
+  src: url('/fonts/fraunces-var.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fraunces var';
+  src: url('/fonts/fraunces-var-italic.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: italic;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -52,21 +105,34 @@
   }
 
   body {
-    @apply bg-white text-ink font-sans antialiased;
+    @apply bg-cream text-ink font-sans antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-brand-600;
   }
 
+  ::selection {
+    @apply bg-peach-200 text-ink;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
     }
+    /* Iteration count matters too: an infinite animation squeezed to 0.01ms
+       would flicker rather than stop. */
     *,
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
   }
@@ -85,25 +151,60 @@
 
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-         text-sm font-semibold whitespace-nowrap transition-colors duration-150;
+         text-sm font-semibold whitespace-nowrap transition-all duration-200;
 }
 
 @utility btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-         text-sm font-semibold whitespace-nowrap transition-colors duration-150
-         bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800;
+         text-sm font-semibold whitespace-nowrap transition-all duration-200
+         bg-brand-600 text-white shadow-[0_8px_24px_-10px_rgb(29_119_145/0.7)]
+         hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 active:bg-brand-800;
 }
 
 @utility btn-ghost {
   @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
-         text-sm font-semibold whitespace-nowrap transition-colors duration-150
-         border border-line bg-white text-ink hover:border-brand-300 hover:bg-brand-50;
+         text-sm font-semibold whitespace-nowrap transition-all duration-200
+         border border-ink/10 bg-white/70 text-ink backdrop-blur
+         hover:border-brand-300 hover:bg-white;
 }
 
 @utility card {
-  @apply rounded-[1.25rem] border border-line bg-white p-6 shadow-sm;
+  @apply rounded-[1.5rem] border border-line/70 bg-white p-6 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_12px_32px_-16px_rgb(15_23_42/0.12)];
 }
 
 @utility eyebrow {
-  @apply text-xs font-semibold uppercase tracking-[0.14em] text-brand-600;
+  @apply text-xs font-semibold uppercase tracking-[0.16em] text-brand-600;
+}
+
+@utility font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+/* Scroll reveal. Hidden only once JS has marked the element as pending, so the
+   content is never stuck invisible if the observer does not run. */
+@utility reveal {
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+
+  &[data-reveal='pending'] {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+/* Fine grain over the hero gradients — keeps large flat colour from banding. */
+@utility grain {
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.06;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
 }
