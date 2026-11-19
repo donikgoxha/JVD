@@ -10,12 +10,10 @@ export default function About() {
         eyebrow="About us"
         title={
           <>
-            A family practice, <em>two clinics</em>, one standard.
+            A family practice with <em>two clinics</em> in {CLINIC.city}.
           </>
         }
-        // TODO: the clinic's own story — founding year, how the second clinic
-        // came about — is not confirmed, so nothing is claimed here. Ask for it
-        // and expand this paragraph.
+        // TODO clinic history (founding year, the second clinic) once they send it
         lead={`${CLINIC.name} is a family practice in ${CLINIC.city}, run by the Selimi family across ${LOCATIONS.length} clinics, on one rule: never treat a patient who does not understand what is about to happen.`}
       />
 
@@ -30,7 +28,7 @@ export default function About() {
           <Reveal delay={120} className="space-y-5 text-lg leading-relaxed text-muted">
             <p>
               A restoration that looks perfect on the day and fails in four is a failure. We plan
-              around longevity — conservative preparation, materials chosen for durability, and
+              around longevity: conservative preparation, materials chosen for durability, and
               recall schedules that catch problems while they are still small and cheap.
             </p>
             <p>

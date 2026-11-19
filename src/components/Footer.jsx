@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom'
-import { CLINIC, LOCATIONS, NAV, telHref } from '../data/clinic.js'
+import { CLINIC, LOCATIONS, NAV, formatHours, telHref } from '../data/clinic.js'
 import { InstagramGlyph, Logo } from './Icons.jsx'
 
 export default function Footer() {
   return (
     <footer className="mt-20 bg-deep text-brand-100">
-      {/* Brand | locations | nav. The locations column is its own auto-fit grid
-          so a third or fourth clinic widens that band instead of pushing the
-          nav onto a second row. */}
+      {/* Locations get their own auto-fit grid so a third clinic doesn't push nav down a row. */}
       <div className="container-page grid gap-12 pb-12 pt-16 lg:grid-cols-[1.3fr_2.2fr_0.8fr]">
         <div>
           <div className="flex items-center gap-3">
@@ -15,7 +13,7 @@ export default function Footer() {
             <p className="font-display text-2xl font-medium text-white">{CLINIC.name}</p>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-brand-200">
-            A family dental practice in {CLINIC.city}. {LOCATIONS.length} clinics, one standard of care.
+            Family dentistry in {CLINIC.city}, at {LOCATIONS.length} addresses in town.
           </p>
           <a
             href={CLINIC.instagram}
@@ -34,7 +32,7 @@ export default function Footer() {
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-brand-300">{loc.name}</p>
               <address className="mt-4 space-y-2 text-sm not-italic text-brand-100">
                 <p>{loc.address}</p>
-                {loc.hours && <p>{loc.hours}</p>}
+                {loc.hours && <p>{formatHours(loc.hours)}</p>}
                 <a href={telHref(loc.phone)} className="block font-medium text-white hover:text-peach-200">
                   {loc.phone}
                 </a>
@@ -67,7 +65,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Oversized wordmark — decorative, the name is already in the brand column. */}
+      {/* Decorative wordmark */}
       <div className="container-page overflow-hidden" aria-hidden="true">
         <p className="font-display select-none text-center text-[22vw] leading-[0.8] font-semibold tracking-tighter text-white/[0.06] lg:text-[11rem]">
           JVD Dental
@@ -88,7 +86,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Build credit — the last line on the page. */}
+      {/* Build credit, keep last */}
       <div className="border-t border-white/10">
         <p className="footer__craft container-page py-5 text-center text-xs text-brand-300">
           Crafted by{' '}

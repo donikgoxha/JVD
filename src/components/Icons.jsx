@@ -1,8 +1,4 @@
-/*
- * The site's whole icon set, as inline SVG paths. A handful of icons as paths
- * costs a few hundred bytes; an icon package would cost tens of kilobytes.
- * Every icon is decorative (aria-hidden) — the adjacent text carries meaning.
- */
+// Inline SVG icons. All decorative (aria-hidden); the text next to them carries the meaning.
 const PATHS = {
   phone:
     'M5 4h3.2l1.6 4-2 1.3a11 11 0 005 5l1.3-2 4 1.6V17a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2Z',

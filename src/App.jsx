@@ -5,8 +5,7 @@ import Footer from './components/Footer.jsx'
 import usePageMeta from './hooks/usePageMeta.js'
 import Home from './pages/Home.jsx'
 
-// Only Home ships in the initial bundle. Everything else is a separate chunk
-// fetched on navigation.
+// Home is in the main bundle; the other pages load on navigation.
 const About = lazy(() => import('./pages/About.jsx'))
 const Work = lazy(() => import('./pages/Work.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))

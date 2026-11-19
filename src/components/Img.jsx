@@ -1,24 +1,8 @@
 import { useState } from 'react'
 
-/**
- * An <img> that always has something to show.
- *
- * None of the clinic's photography is committed yet (see docs/ASSETS.md), so a
- * plain <img> renders as a blank or broken box. Rather than react to an error
- * after the fact, this draws the placeholder FIRST and fades the real photo in
- * over it once it decodes. Consequences that matter:
- *
- *   - Nothing is ever blank, including `loading="lazy"` images that have not
- *     been fetched yet — an onError-only approach leaves a hole until the
- *     request actually fails.
- *   - A 404, a wrong MIME type, or a slow network all degrade to the same
- *     deliberate-looking box.
- *   - Once the real files land the component is a no-op: the photo covers the
- *     placeholder entirely.
- *
- * `className` carries the sizing (aspect ratio, rounding, shadow) and lands on
- * the wrapper, so the placeholder and the photo occupy the identical box.
- */
+// Placeholder first, real photo fades in over it once decoded. 404s and slow
+// networks end up looking the same, and lazy images never leave a blank box.
+// `className` sizes the wrapper, so both layers share one box.
 export default function Img({
   src,
   alt,
@@ -39,7 +23,7 @@ export default function Img({
       className={`relative isolate overflow-hidden bg-gradient-to-br from-brand-100 via-brand-50 to-brand-200 ${className}`}
       {...rest}
     >
-      {/* Placeholder layer — hidden from assistive tech once the photo loads. */}
+      {/* Removed once the photo loads */}
       {!loaded && (
         <div
           role="img"
@@ -75,9 +59,7 @@ export default function Img({
       {!failed && src && (
         <img
           src={src}
-          // Empty alt on the photo: while it is loading the placeholder above
-          // already carries the description, and once loaded the wrapper's
-          // aria-label is gone — so re-expose it here.
+          // The placeholder holds the alt text until the photo takes over.
           alt={loaded ? alt : ''}
           width={width}
           height={height}
@@ -85,8 +67,7 @@ export default function Img({
           fetchPriority={fetchPriority}
           decoding="async"
           onLoad={(e) => {
-            // A rewrite that serves index.html for a missing asset can "load"
-            // with zero intrinsic size. Treat that as a failure.
+            // An SPA rewrite can "load" a missing image as HTML with 0 width.
             if (e.currentTarget.naturalWidth > 0) setLoaded(true)
             else setFailed(true)
           }}

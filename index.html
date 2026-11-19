@@ -1,46 +1,37 @@
 <!doctype html>
-<!--
-  lang is the language of the INTERFACE COPY, not of the clinic's country.
-  All UI text below is English, so lang="en" — a screen reader would otherwise
-  read English words with Macedonian phonetics. Switch to "mk" (or "sq") only
-  when the copy itself is translated.
--->
+<!-- lang follows the copy (English), not the country -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1d7791" />
-    <title>JVD Dental Clinic — Gostivar</title>
+    <title>JVD Dental Clinic | Gostivar</title>
     <meta
       name="description"
-      content="JVD Dental Clinic — a family dental practice with two clinics in Gostivar. Three dentists, one standard of care."
+      content="Family dental practice in Gostivar with clinics on Boulevard Goce Delchev and Brakja Gjinoski. Call either clinic or your dentist directly."
     />
+    <meta name="robots" content="index, follow" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
-
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
-    <!--
-      Self-hosted Inter variable font, latin subset — all site copy, including
-      both street addresses, is Latin script. Must stay the same URL as the
-      first @font-face src in index.css, or the font is fetched twice.
-    -->
+    <!-- keep in sync with the @font-face src URLs in index.css -->
     <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
-    <!-- Fraunces (headings). Same rule: matches the upright @font-face src. -->
     <link rel="preload" href="/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin />
 
-    <!-- Open Graph. og:url and the absolute og:image / twitter:image URLs are
-         injected by vite.config.js from VITE_SITE_URL — scrapers reject
-         root-relative image paths. -->
-    <meta property="og:title" content="JVD Dental Clinic — Gostivar" />
-    <meta property="og:description" content="A family dental practice with two clinics in Gostivar. Three dentists, one standard of care." />
-    <meta property="og:locale" content="en" />
+    <!-- og:url, og:image and twitter:image are added by vite.config.js -->
+    <meta property="og:title" content="JVD Dental Clinic | Gostivar" />
+    <meta
+      property="og:description"
+      content="Family dental practice in Gostivar with clinics on Boulevard Goce Delchev and Brakja Gjinoski. Call either clinic or your dentist directly."
+    />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="JVD Dental Clinic" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="JVD Dental Clinic — two clinics in Gostivar" />
+    <meta property="og:image:alt" content="JVD Dental Clinic, Gostivar" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>

@@ -3,11 +3,7 @@ import Icon, { InstagramGlyph } from './Icons.jsx'
 import Img from './Img.jsx'
 import Reveal from './Reveal.jsx'
 
-/**
- * One large, unmissable card that sends people to the clinic's real Instagram
- * feed. It is a single <a> so the whole surface is one tap target on mobile,
- * and it opens in a new tab so the patient does not lose the site.
- */
+// One big link to the clinic's Instagram; the whole card is the tap target.
 export default function InstagramCard() {
   return (
     <Reveal>
@@ -38,8 +34,8 @@ export default function InstagramCard() {
               Our feed is not a stock-photo gallery. It is{' '}
               <strong className="font-semibold text-white">
                 real models, actual clients of this clinic, and our products shown in real hands
-              </strong>{' '}
-              — before and after shots, treatment days, and the work exactly as it left the chair.
+              </strong>
+              . Before-and-afters, treatment days, and work exactly as it left the chair.
             </p>
 
             <ul className="mt-7 flex flex-wrap gap-2">
@@ -67,11 +63,7 @@ export default function InstagramCard() {
   )
 }
 
-/**
- * Grid of real posts from INSTAGRAM_POSTS in clinic.js. Renders nothing while
- * that list is empty — the card above stands on its own, and an empty grid of
- * placeholders would read as "no work to show".
- */
+// Real posts from INSTAGRAM_POSTS. Renders nothing while that list is empty.
 export function InstagramGallery({ limit }) {
   const posts = limit ? INSTAGRAM_POSTS.slice(0, limit) : INSTAGRAM_POSTS
   if (posts.length === 0) return null

@@ -1,9 +1,6 @@
 import Reveal from './Reveal.jsx'
 
-/**
- * Section wrapper: eyebrow + display-serif title + lead, then children.
- * `title` may contain an <em>, which renders as the italic accent.
- */
+// Eyebrow + title + lead. An <em> in `title` gets the italic accent.
 export default function Section({ id, eyebrow, title, lead, children, className = '', center = false }) {
   return (
     <section id={id} className={`container-page py-20 sm:py-28 ${className}`}>

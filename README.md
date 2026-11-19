@@ -131,8 +131,10 @@ or AI images — on a dental site a gallery reads as "our patients' results".
 Each of these is **omitted** from the site rather than guessed:
 
 - [ ] `CLINIC.email` — `null`; email links are hidden
-- [ ] `LOCATIONS[*].hours` — `null`; cards say "Call for opening hours", and `openingHours`
-      is left out of the structured data
+- [ ] `LOCATIONS[*].hours` — `null`; cards say "Call for opening hours", and
+      `openingHoursSpecification` is left out of the JSON-LD. Format is in `clinic.js`.
+- [ ] `LOCATIONS[*].geo` — `null`; copy `{ lat, lng }` from each clinic's Google Maps pin to
+      add `geo` to the JSON-LD. Don't estimate it.
 - [ ] `DOCTORS[*].role` — all read `Dentist`, a stand-in for the confirmed specialty
 - [ ] `DOCTORS[*].bio` — empty; never invent credentials for a named person
 - [ ] `SERVICES` — standard for a general practice but **published and unverified**. Confirm
@@ -168,9 +170,12 @@ Rules worth keeping:
 - **Every `<img>` has `width` and `height`** and sits in an aspect-ratio box, so layout never
   shifts. The hero image is `loading="eager"` + `fetchPriority="high"` (it is the LCP
   element); everything else is lazy.
-- **Structured data at build time.** `vite.config.js` injects Dentist JSON-LD (generated from
-  `clinic.js`), canonical, `og:url` and an absolute `og:image` into `index.html`, so crawlers
-  get it without running JavaScript. `usePageMeta.js` sets per-route title/description/canonical.
+- **SEO at build time.** `vite.config.js` injects JSON-LD (a `MedicalOrganization` plus one
+  `Dentist` per clinic, linked by `parentOrganization`, generated from `clinic.js`), canonical,
+  `og:url` and an absolute `og:image` into `index.html`, and emits `robots.txt` and
+  `sitemap.xml` (routes from `NAV`). Everything uses `VITE_SITE_URL`. `geo` and
+  `openingHoursSpecification` appear once `LOCATIONS[*].geo` / `.hours` are filled in.
+  `usePageMeta.js` sets per-route title, description, canonical and robots (`noindex` on 404).
 
 ---
 
@@ -209,4 +214,4 @@ Cloudflare Pages). Both also 301 `/book` → `/contact`. For other hosts: GitHub
 - [ ] `/book` redirects to `/contact`.
 - [ ] Every `tel:` link dials correctly on a real phone.
 - [ ] Link preview shows the `og-cover.jpg` card (test in a preview debugger or WhatsApp).
-- [ ] `robots.txt` and `sitemap.xml` carry the live domain.
+- [ ] `/robots.txt` and `/sitemap.xml` load and carry the live domain (generated from `VITE_SITE_URL`).

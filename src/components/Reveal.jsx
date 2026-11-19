@@ -1,14 +1,7 @@
 import { useEffect, useRef } from 'react'
 
-/*
- * One shared, rAF-throttled scroll check for every pending element.
- *
- * Not IntersectionObserver: it only reports threshold *crossings* it samples,
- * so an element skipped over in one jump (a fast flick, an anchor link, the
- * back button restoring scroll) never intersects and stays hidden forever.
- * Comparing positions instead reveals anything at or above the line, however
- * the page got there.
- */
+// One rAF-throttled scroll check shared by every pending element. Not
+// IntersectionObserver: it misses elements a fast scroll or anchor jump skips over.
 const pending = new Set()
 let scheduled = false
 
@@ -43,14 +36,8 @@ function watch(el) {
   schedule()
 }
 
-/**
- * Fades and lifts its content in the first time it scrolls into view.
- *
- * The element renders visible; the effect marks it `pending` only after mount,
- * and only if it is still below the fold. So content is never stuck hidden
- * without JS or for a crawler, and nothing already on screen at load flickers.
- * Motion itself is clamped by the prefers-reduced-motion rule in index.css.
- */
+// Fade-up on first scroll into view. Only hides things that start below the fold,
+// so nothing flickers on load and nothing stays hidden without JS.
 export default function Reveal({ as = 'div', delay = 0, className = '', style, children, ...rest }) {
   const Tag = as
   const ref = useRef(null)

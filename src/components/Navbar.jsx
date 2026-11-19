@@ -19,8 +19,7 @@ export default function Navbar() {
     }
   }, [open])
 
-  // The bar floats transparent over the hero and gains a surface once the
-  // page scrolls beneath it.
+  // Transparent over the hero, solid once the page scrolls.
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12)
     onScroll()
@@ -47,7 +46,7 @@ export default function Navbar() {
         }`}
       >
         <nav className="flex h-16 items-center justify-between pl-3 pr-2 sm:pl-4" aria-label="Main">
-          <Link to="/" className="flex items-center gap-2.5" aria-label={`${CLINIC.name} — home`}>
+          <Link to="/" className="flex items-center gap-2.5" aria-label={`${CLINIC.name} home`}>
             <Logo />
             <span className="leading-none">
               <span className="font-display block text-lg font-semibold">JVD Dental</span>

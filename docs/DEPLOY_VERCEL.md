@@ -50,7 +50,7 @@ reproducible from its commit:
 
 - `vercel.json` — framework, build command, output dir, SPA rewrite, cache and security headers
 - `.env.production` — build-time `VITE_` settings (`VITE_SITE_URL`)
-- `public/robots.txt` — indexing policy
+- `vite.config.js` — generates `robots.txt`, `sitemap.xml`, canonical/OG tags and JSON-LD from `VITE_SITE_URL`
 
 Adding a `VITE_` variable in the Vercel dashboard instead would make the dashboard and the
 repo disagree, and the next person reading the code would have no way to know. Keep them in
@@ -89,8 +89,8 @@ npx vercel logs <deployment-url>        # build/runtime logs
 
 ## Live status
 
-The site is public and indexable. `public/robots.txt` allows all crawlers and points at
-`sitemap.xml`.
+The site is public and indexable. The built `robots.txt` allows all crawlers and points at
+`sitemap.xml`; both are generated at build time, so there is no copy in `public/`.
 
 **There is no online booking.** Every call to action is a phone number, a map link or
 Instagram. `/book`, which used to host a booking flow, now 301-redirects to `/contact`
@@ -130,11 +130,9 @@ Once the client approves and supplies a domain: Vercel dashboard → Project →
 Domains → Add. Vercel prints the DNS records to set at the registrar and issues the TLS
 certificate automatically.
 
-Pointing a real domain at the site means changing the origin in **three files, one commit**:
-
-- `VITE_SITE_URL` in `.env.production` — drives the canonical tag, `og:url` and the JSON-LD
-- the `Sitemap:` line in `public/robots.txt`
-- every `<loc>` in `public/sitemap.xml`
+Pointing a real domain at the site is **one line**: `VITE_SITE_URL` in `.env.production`.
+The canonical tag, `og:url`, `og:image`, the JSON-LD, `robots.txt` and `sitemap.xml` are all
+built from it.
 
 A canonical tag pointing at the old origin is the classic way to make a new domain invisible
 to search.

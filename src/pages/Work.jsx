@@ -2,17 +2,8 @@ import Section from '../components/Section.jsx'
 import InstagramCard, { InstagramGallery } from '../components/InstagramCard.jsx'
 import { CallBand, PageHero, ServicesGrid } from '../components/Blocks.jsx'
 
-/*
- * NOTE ON THE GALLERY
- *
- * This page once carried four invented before/after case studies, captioned as
- * real patients "published with written consent" — a fabricated clinical claim
- * about a real practice, so they were removed.
- *
- * The gallery now comes from INSTAGRAM_POSTS in src/data/clinic.js: real posts
- * from the clinic's own feed, which the clinic has already chosen to publish.
- * Until that list is filled, the Instagram card stands on its own.
- */
+// The invented before/after cases that used to live here were removed. The
+// gallery is now INSTAGRAM_POSTS (clinic.js): only posts the clinic itself published.
 
 export default function Work() {
   return (
@@ -24,7 +15,7 @@ export default function Work() {
             See the work <em>before</em> you sit in the chair.
           </>
         }
-        lead="Our day-to-day work is published on Instagram — treatments as they were finished, in the clinic, on real patients. It is the most honest look at what we do, and it is updated far more often than any website gallery."
+        lead="We post our day-to-day work on Instagram: treatments as they were finished, in the clinic, on real patients. It's the most honest look at what we do, and it gets updated far more often than a website gallery would."
       />
 
       <section className="container-page">
@@ -44,8 +35,8 @@ export default function Work() {
         <ServicesGrid />
         <p className="mt-10 max-w-2xl text-xs leading-relaxed text-muted">
           Results depend on your starting condition, oral hygiene and healing. Nothing on this page
-          is a guarantee of outcome — come in for a consultation and we will tell you honestly what
-          is achievable in your case.
+          is a guarantee of outcome. Come in for a consultation and we'll tell you honestly what's
+          achievable in your case.
         </p>
       </Section>
 

@@ -14,7 +14,7 @@ export default function Contact() {
             Come and <em>say hello</em>.
           </>
         }
-        lead={`${LOCATIONS.length} clinics in ${CLINIC.city}, and a direct line to every dentist. Call whichever suits you — the number goes straight to the clinic.`}
+        lead={`${LOCATIONS.length} clinics in ${CLINIC.city}, and a direct line to every dentist. Each number goes straight to the clinic, so call whichever suits you.`}
       >
         <div className="mt-10 flex flex-wrap gap-3">
           {LOCATIONS.map((loc) => (

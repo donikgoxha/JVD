@@ -1,5 +1,0 @@
-# JVD Dental Clinic — live. Crawl everything.
-User-agent: *
-Allow: /
-
-Sitemap: https://jvd-dental.vercel.app/sitemap.xml

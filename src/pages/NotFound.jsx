@@ -12,7 +12,7 @@ export default function NotFound() {
           This page has gone <em className="text-brand-600">missing</em>.
         </h1>
         <p className="mx-auto mt-5 max-w-md text-muted">
-          That link does not lead anywhere — but both of our clinics are exactly where they should be.
+          That link doesn't lead anywhere. Both clinics are still exactly where they were, though.
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
           <Link to="/" className="btn-ghost px-7 py-3.5">

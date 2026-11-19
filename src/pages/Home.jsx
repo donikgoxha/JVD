@@ -41,7 +41,7 @@ export default function Home() {
         eyebrow="The team"
         title={
           <>
-            {COUNT_WORDS[DOCTORS.length] ?? DOCTORS.length} dentists, <em>one family</em>.
+            Meet your <em>dentists</em>.
           </>
         }
         lead="The people you will actually meet. Each one is reachable on their own direct line."
@@ -61,7 +61,7 @@ export default function Home() {
             {COUNT_WORDS[LOCATIONS.length] ?? LOCATIONS.length} clinics in <em>{CLINIC.city}</em>.
           </>
         }
-        lead="Choose whichever is closer — the same standard of care at both addresses."
+        lead="Pick whichever is closer. Both are run the same way, by the same family."
       >
         <LocationCards />
       </Section>
@@ -89,8 +89,8 @@ function Hero() {
           </h1>
 
           <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-            {CLINIC.name} is a family practice with {LOCATIONS.length} clinics in {CLINIC.city} —{' '}
-            {DOCTORS.length} dentists, one standard of care, and all the time you need to ask
+            {CLINIC.name} is a family practice in {CLINIC.city}. Our {DOCTORS.length} dentists work
+            across {LOCATIONS.length} clinics in town, and every appointment leaves time for your
             questions.
           </p>
 
@@ -106,8 +106,7 @@ function Hero() {
           </div>
 
           <dl className="mt-14 flex flex-wrap gap-x-10 gap-y-6 border-t border-ink/10 pt-8">
-            {/* Only verifiable facts here. Do not add a years-in-practice or a
-                star-rating figure until the clinic confirms the real number. */}
+            {/* No years-in-practice or ratings until the clinic gives us real numbers */}
             {[
               [String(LOCATIONS.length), `Clinics in ${CLINIC.city}`],
               [String(DOCTORS.length), 'Dentists'],
@@ -192,8 +191,7 @@ function RotatingBadge() {
           <path id="badge-circle" d="M60 60m-44 0a44 44 0 1 1 88 0a44 44 0 1 1-88 0" />
         </defs>
         <text className="fill-brand-700 text-[10.5px] font-semibold tracking-[0.18em]">
-          {/* textLength = the circle's circumference (2πr, r=44), so the
-              phrase closes the loop exactly whatever its length. */}
+          {/* 276 = circumference at r=44, so the text always closes the loop */}
           <textPath href="#badge-circle" textLength="276" lengthAdjust="spacing">
             {text}
           </textPath>

@@ -3,42 +3,32 @@ import { useLocation } from 'react-router-dom'
 
 const SITE_URL = (import.meta.env.VITE_SITE_URL || window.location.origin).replace(/\/$/, '')
 
-/**
- * Per-route <title>, meta description and canonical URL.
- *
- * index.html can only carry one set of tags, and a four-page SPA that reports
- * the same title and canonical on every route gets those routes collapsed or
- * ignored in search results. This rewrites them on navigation.
- *
- * Search engines do execute JavaScript, so this is picked up — but it lands
- * after first paint. The structured data that matters most (addresses, phones,
- * practitioners) is injected statically at build time by vite.config.js instead.
- */
+// Per-route title, description, canonical and robots. index.html only has one set.
 const META = {
   '/': {
-    title: 'JVD Dental Clinic — Dentist in Gostivar',
+    title: 'JVD Dental Clinic | Dentist in Gostivar',
     description:
-      'A family dental practice with two clinics in Gostivar. Three dentists, one standard of care.',
+      'Family dental practice in Gostivar with clinics on Boulevard Goce Delchev and Brakja Gjinoski. Call either clinic or your dentist directly.',
   },
   '/about': {
-    title: 'About Us — JVD Dental Clinic, Gostivar',
+    title: 'About Us | JVD Dental Clinic, Gostivar',
     description:
       'Meet the dentists behind JVD Dental Clinic and the way we work: explain before we treat, and never rush an appointment.',
   },
   '/our-work': {
-    title: 'Our Work — JVD Dental Clinic, Gostivar',
+    title: 'Our Work | JVD Dental Clinic, Gostivar',
     description:
       'See real treatments from our clinics on Instagram, and the dental work we do most in Gostivar.',
   },
   '/contact': {
-    title: 'Contact — JVD Dental Clinic, Gostivar',
+    title: 'Contact | JVD Dental Clinic, Gostivar',
     description:
       'Addresses, directions and direct phone numbers for both JVD Dental clinics and all three dentists in Gostivar.',
   },
 }
 
 const FALLBACK = {
-  title: 'Page not found — JVD Dental Clinic',
+  title: 'Page not found | JVD Dental Clinic',
   description: 'That page does not exist. Find our clinics and dentists in Gostivar.',
 }
 
@@ -61,16 +51,7 @@ export default function usePageMeta() {
     setMeta('meta[property="og:url"]', 'content', canonical)
     setMeta('link[rel="canonical"]', 'href', canonical)
 
-    // A 404 must not invite indexing. React cannot send a status code, so the
-    // meta robots tag is the only signal available on a static host.
-    const existing = document.head.querySelector('meta[name="robots"]')
-    if (META[pathname]) {
-      existing?.remove()
-    } else if (!existing) {
-      const tag = document.createElement('meta')
-      tag.name = 'robots'
-      tag.content = 'noindex'
-      document.head.appendChild(tag)
-    }
+    // A static host can't send a 404 status, so noindex is the only signal we have.
+    setMeta('meta[name="robots"]', 'content', META[pathname] ? 'index, follow' : 'noindex')
   }, [pathname])
 }

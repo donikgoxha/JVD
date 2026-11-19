@@ -8,14 +8,12 @@ import {
   SERVICES,
   VALUES,
   doctorsAtLocation,
+  formatHours,
   locationsForDoctor,
   telHref,
 } from '../data/clinic.js'
 
-/*
- * Content blocks shared between pages. Each one derives from clinic.js, so a
- * new doctor, clinic or service shows up everywhere without a page edit.
- */
+// Blocks shared between pages. All of them read from clinic.js.
 
 /** Soft colour fields behind a hero. Decorative only. */
 export function Glow({ className = '' }) {
@@ -45,7 +43,7 @@ export function PageHero({ eyebrow, title, lead, children }) {
   )
 }
 
-/** Endless strip of service names. Purely decorative — the grid lists them. */
+/** Service names on a loop. Decorative; the grid below lists them properly. */
 export function Marquee() {
   const items = [...SERVICES, ...SERVICES]
   return (
@@ -178,7 +176,7 @@ export function TeamGrid() {
   )
 }
 
-/** A stylised street grid with a pin — reads as "map" without a third-party embed. */
+/** Fake street grid with a pin, so the card reads as a map without an embed. */
 function MapArt({ index }) {
   return (
     <div className="relative h-44 overflow-hidden bg-brand-50" aria-hidden="true">
@@ -238,7 +236,7 @@ export function LocationCards() {
                     {loc.phone}
                   </a>
                 </p>
-                <p className="pl-6">{loc.hours ?? 'Call for opening hours'}</p>
+                <p className="pl-6">{formatHours(loc.hours) ?? 'Call for opening hours'}</p>
               </address>
 
               {team.length > 0 && (
